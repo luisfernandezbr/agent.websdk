@@ -1,9 +1,12 @@
 {
   "name": "@pinpt/agent.websdk",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "Pinpoint Agent WebSDK",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "files": ["dist"],
+  "types": "dist/index.d.ts",
   "scripts": {
+    "prepack": "npm run build",
     "build": "rollup -c",
     "watch": "rollup -cw"
   },

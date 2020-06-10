@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const useIntegration = (publisher: string, refType: string) => {
+export const useIntegration = (publisher: string, refType: string) => {
 	const [ready, setReady] = useState(false);
 	const setEnabled = useCallback((value: boolean) => {
 		window.parent.postMessage({
@@ -48,5 +48,3 @@ const useIntegration = (publisher: string, refType: string) => {
 		setConfig,
 	};
 };
-
-export default useIntegration;
