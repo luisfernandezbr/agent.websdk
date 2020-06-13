@@ -1,50 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useContext } from 'react';
+import { IAppContext } from './types';
+import AppContext from './context';
 
-export const useIntegration = (publisher: string, refType: string) => {
-	const [ready, setReady] = useState(false);
-	const setEnabled = useCallback((value: boolean) => {
-		window.parent.postMessage({
-			command: 'ENABLE',
-			scope: 'INTEGRATION',
-			publisher,
-			refType,
-			value,
-		}, '*');
-	}, []);
-	const setConfig = useCallback((value: {[key: string]: any}) => {
-		window.parent.postMessage({
-			command: 'CONFIG',
-			scope: 'INTEGRATION',
-			publisher,
-			refType,
-			value,
-		}, '*');
-	}, []);
-	useEffect(() => {
-		const handler = (e: any) => {
-			const { data } = e;
-			switch (data.command) {
-				case 'INIT': {
-					setReady(true);
-					break;
-				}
-				default: break;
-			}
-		};
-		window.addEventListener('message', handler);
-		return () => {
-			window.parent.postMessage({
-				command: 'EXIT',
-				scope: 'INTEGRATION',
-				publisher,
-				refType,
-			}, '*');
-			window.removeEventListener('message', handler);
-		};
-	}, []);
-	return {
-		ready,
-		setEnabled,
-		setConfig,
-	};
+export const useIntegration = () => {
+	const context = useContext(AppContext.Context);
+	if (AppContext === undefined) {
+		throw new Error('useIntegration must be used within an AppContextProvider');
+	}
+	return context as IAppContext;
 };

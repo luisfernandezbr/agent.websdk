@@ -1,11 +1,13 @@
 {
     "compilerOptions": {
+      "allowSyntheticDefaultImports": true,
       "declaration": true,
       "declarationDir": "./dist",
       "module": "es6",
+      "jsx": "react",
       "noImplicitAny": true,
       "outDir": "./dist",
-      "target": "es5"
+      "target": "es2015"
     },
     "include": [
       "src/**/*"
