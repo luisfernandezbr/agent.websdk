@@ -8,6 +8,7 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
+    "prepare": "npm install --no-save @pinpt/uic.next",
     "prepack": "npm run build",
     "build": "rollup -c",
     "watch": "rollup -cw"
@@ -25,6 +26,6 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "@pinpt/uic.next": "1.0.94"
+    "@pinpt/uic.next": "1.0.95"
   }
 }
