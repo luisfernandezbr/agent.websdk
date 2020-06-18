@@ -15,7 +15,7 @@ export interface InstallerProps {
     onInstall: (integration: Integration) => Promise<void>;
 }
 
-const Frame = React.memo(({ ref, url, name, onLoad}: any) => {
+const Frame = React.memo(React.forwardRef(({ url, name, onLoad}: any, ref: any) => {
 	return (
 		<iframe
 			ref={ref}
@@ -27,7 +27,7 @@ const Frame = React.memo(({ ref, url, name, onLoad}: any) => {
 		>
 		</iframe>
 	);
-});
+}));
 
 const Installer = (props: InstallerProps) => {
 	const ref = useRef<any>();
@@ -95,7 +95,7 @@ const Installer = (props: InstallerProps) => {
 						if (href.indexOf('.edge.pinpoint') > 0) {
 							domain = 'edge.pinpoint.com';
 						} else if (href.indexOf('.ppoint.io') > 0) {
-							domain = 'ppoint.io:3000';
+							domain = 'edge.pinpoint.com';
 						} else {
 							domain = 'pinpoint.com';
 						}
@@ -144,7 +144,7 @@ const Installer = (props: InstallerProps) => {
 				publisher={props.integration.publisher}
 				onClick={onClick}
 			/>
-			{!loaded && <Loader centered />}
+			{!loaded && <Loader centered style={{marginTop: '5rem'}} />}
 			<Frame
 				ref={ref}
 				name={props.integration.name}
