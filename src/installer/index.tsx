@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
 export { default as Integration } from './types';
@@ -14,11 +15,26 @@ export interface InstallerProps {
     onInstall: (integration: Integration) => Promise<void>;
 }
 
+const Frame = React.memo(({ ref, url, name, onLoad}: any) => {
+	return (
+		<iframe
+			ref={ref}
+			title={`integration-${name}`}
+			src={url}
+			onLoad={onLoad}
+			sandbox="allow-scripts"
+			style={{display:'none', margin: '0', padding: '0', height: '100vh', width: '100%', backgroundColor: '#fff'}}
+		>
+		</iframe>
+	);
+});
+
 const Installer = (props: InstallerProps) => {
 	const ref = useRef<any>();
 	const [isInstalled, setIsInstalled] = useState(false);
 	const [installEnabled, setInstallEnabled] = useState(false);
 	const [, setConfig] = useState<any>();
+	const [loaded, setLoaded] = useState(false);
 	const onLoad = useCallback(() => {
 		const redirected = document.location.search.indexOf('integration=redirect') > 0;
 		const url = document.location.href;
@@ -36,7 +52,10 @@ const Installer = (props: InstallerProps) => {
 			installed: isInstalled,
 			redirected,
 		}, '*');
-		setTimeout(() => ref.current.style.display = '', 500);
+		setTimeout(() => {
+			ref.current.style.display = '';
+			setLoaded(true);
+		}, 500);
 	}, [ref, isInstalled]);
 	useEffect(() => {
 		const handler = async(e: any) => {
@@ -52,18 +71,14 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'getConfig': {
                         const config = await props.getConfig(props.integration);
-						// const config = JSON.parse(window.localStorage.getItem(`installer.config.${refType}`) || '{}');
 						setConfig(config);
-						// setIsInstalled(window.localStorage.getItem(`installer.${refType}`) === 'true');
 						ref.current.contentWindow.postMessage({command: 'getConfig', config}, '*');
 						break;
 					}
 					case 'setConfig': {
                         const { value } = data;
                         props.setConfig(props.integration, value);
-						// const val = JSON.stringify(value);
 						setConfig(value);
-						// window.localStorage.setItem(`installer.config.${refType}`, val);
 						break;
 					}
 					case 'getRedirectURL': {
@@ -108,15 +123,12 @@ const Installer = (props: InstallerProps) => {
 			setIsInstalled(false);
             setInstallEnabled(false);
             await props.onRemove(props.integration);
-			// window.localStorage.removeItem(`installer.${theRefType.current}`);
-			// window.localStorage.removeItem(`installer.config.${theRefType.current}`);
 			const url = ref.current.getAttribute('src');
 			ref.current.setAttribute('src', '');
 			ref.current.setAttribute('src', url);
 		} else {
             // this is an install
             await props.onInstall(props.integration);
-			// window.localStorage.setItem(`installer.${theRefType.current}`, 'true');
 			setIsInstalled(true);
 		}
 	}, [isInstalled]);
@@ -132,17 +144,15 @@ const Installer = (props: InstallerProps) => {
 				publisher={props.integration.publisher}
 				onClick={onClick}
 			/>
-			<iframe
+			{!loaded && <Loader centered />}
+			<Frame
 				ref={ref}
-				title={`integration-${props.integration.name}`}
-				src={props.integration.uiURL}
+				name={props.integration.name}
+				url={props.integration.uiURL}
 				onLoad={onLoad}
-				sandbox="allow-scripts"
-				style={{display:'none', margin: '0', padding: '0', height: '100vh', width: '100%', backgroundColor: '#fff'}}
-			>
-			</iframe>
+			/>
 		</div>
-	)
+	);
 };
 
 export default Installer;
