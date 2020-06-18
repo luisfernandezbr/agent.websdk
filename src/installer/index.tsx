@@ -125,9 +125,11 @@ const Installer = (props: InstallerProps) => {
 			setIsInstalled(false);
 			setInstallEnabled(false);
 			await props.onRemove(props.integration);
-			const url = ref.current.getAttribute('src');
-			ref.current.setAttribute('src', '');
-			ref.current.setAttribute('src', url);
+			if (ref.current) {
+				const url = ref.current.getAttribute('src');
+				ref.current.setAttribute('src', '');
+				ref.current.setAttribute('src', url);
+			}
 		} else {
 			// this is an install
 			await props.onInstall(props.integration);
