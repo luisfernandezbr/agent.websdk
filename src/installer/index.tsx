@@ -36,27 +36,29 @@ const Installer = (props: InstallerProps) => {
 	const [, setConfig] = useState<any>();
 	const [loaded, setLoaded] = useState(false);
 	const onLoad = useCallback(() => {
-		const redirected = document.location.search.indexOf('integration=redirect') > 0;
-		const url = document.location.href;
-		if (redirected) {
-			let currenturl = document.location.href;
-			const i = currenturl.indexOf('?');
-			if (i > 0) {
-				currenturl = currenturl.substring(0, i);
+		if (!loaded) {
+			const redirected = document.location.search.indexOf('integration=redirect') > 0;
+			const url = document.location.href;
+			if (redirected) {
+				let currenturl = document.location.href;
+				const i = currenturl.indexOf('?');
+				if (i > 0) {
+					currenturl = currenturl.substring(0, i);
+				}
+				window.history.pushState(null, window.document.title, currenturl);
 			}
-			window.history.pushState(null, window.document.title, currenturl);
+			ref.current.contentWindow.postMessage({
+				command: 'INIT',
+				url,
+				installed: isInstalled,
+				redirected,
+			}, '*');
+			setTimeout(() => {
+				if (ref.current) ref.current.style.display = '';
+				setLoaded(true);
+			}, 500);
 		}
-		ref.current.contentWindow.postMessage({
-			command: 'INIT',
-			url,
-			installed: isInstalled,
-			redirected,
-		}, '*');
-		setTimeout(() => {
-			ref.current.style.display = '';
-			setLoaded(true);
-		}, 500);
-	}, [ref, isInstalled]);
+	}, [ref, isInstalled, loaded]);
 	useEffect(() => {
 		const handler = async (e: any) => {
 			const { data } = e;

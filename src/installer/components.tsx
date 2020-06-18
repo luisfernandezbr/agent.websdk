@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Icon } from '@pinpt/uic.next';
+import { Button, Icon, Theme } from '@pinpt/uic.next';
 import { Publisher } from './types';
 import styles from './styles.less';
 
@@ -9,11 +9,11 @@ const Tags = ({ tags }: { tags: string[] }) => (
 	</div>
 );
 
-const Indicator = ({ on, errored, message }: { on: boolean, errored: boolean, message?: string }) => (
+const Indicator = ({ on }: { on: boolean }) => (
 	<div className={styles.Indicator}>
-		<div className={[styles.IndicatorCircle, errored ? styles.Errored : on ? styles.Installed : styles.NotInstalled ].join(' ')} />
-		<div className={[styles.IndicatorText, errored ? styles.Errored : on ? styles.Installed : styles.NotInstalled ].join(' ')}>
-			{ errored ? message : on ? 'Installed' : 'Not Installed' }
+		<div className={[styles.IndicatorCircle, on ? styles.Installed : styles.NotInstalled ].join(' ')} />
+		<div className={[styles.IndicatorText, on ? styles.Installed : styles.NotInstalled ].join(' ')}>
+			{ on ? 'Installed' : 'Not Installed' }
 		</div>
 	</div>
 );
@@ -51,15 +51,22 @@ const Description = ({children}: { children: string }) => (
 	</div>
 );
 
+const Error = ({ message }: { message: string }) => (
+	<div className={styles.Errored}>
+		<Icon color={Theme.Red500} icon={['fas', 'exclamation-circle']} /> <span>{message}</span>
+	</div>
+);
+
 const PublisherDetail = ({name, installed, tags, description, publisher, errored, errorMessage}: {name: string, installed: boolean, tags: string[], description: string, publisher: Publisher, errored: boolean, errorMessage?: string}) => (
 	<div className={styles.PublisherDetail}>
 		<div>
 			<PublisherName name={name} />
-			<Indicator on={installed} errored={errored} message={errorMessage} />
+			<Indicator on={installed} />
 		</div>
 		<Tags tags={tags} />
 		<PublisherInfo publisher={publisher} />
 		<Description>{description}</Description>
+		{errored && <Error message={errorMessage!} />}
 	</div>
 );
 
