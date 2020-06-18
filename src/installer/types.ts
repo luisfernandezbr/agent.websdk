@@ -13,4 +13,6 @@ export default interface Integration {
     installed: boolean;
     publisher: Publisher;
     uiURL: string;
+    errored?: boolean;
+    errorMessage?: string;
 }

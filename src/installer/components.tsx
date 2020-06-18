@@ -9,11 +9,11 @@ const Tags = ({ tags }: { tags: string[] }) => (
 	</div>
 );
 
-const Indicator = ({ on }: { on: boolean }) => (
+const Indicator = ({ on, errored, message }: { on: boolean, errored: boolean, message?: string }) => (
 	<div className={styles.Indicator}>
-		<div className={[styles.IndicatorCircle, on ? styles.Installed : styles.NotInstalled ].join(' ')} />
-		<div className={[styles.IndicatorText, on ? styles.Installed : styles.NotInstalled ].join(' ')}>
-			{ on ? 'Installed' : 'Not Installed' }
+		<div className={[styles.IndicatorCircle, errored ? styles.Errored : on ? styles.Installed : styles.NotInstalled ].join(' ')} />
+		<div className={[styles.IndicatorText, errored ? styles.Errored : on ? styles.Installed : styles.NotInstalled ].join(' ')}>
+			{ errored ? message : on ? 'Installed' : 'Not Installed' }
 		</div>
 	</div>
 );
@@ -51,11 +51,11 @@ const Description = ({children}: { children: string }) => (
 	</div>
 );
 
-const PublisherDetail = ({name, installed, tags, description, publisher}: {name: string, installed: boolean, tags: string[], description: string, publisher: Publisher}) => (
+const PublisherDetail = ({name, installed, tags, description, publisher, errored, errorMessage}: {name: string, installed: boolean, tags: string[], description: string, publisher: Publisher, errored: boolean, errorMessage?: string}) => (
 	<div className={styles.PublisherDetail}>
 		<div>
 			<PublisherName name={name} />
-			<Indicator on={installed} />
+			<Indicator on={installed} errored={errored} message={errorMessage} />
 		</div>
 		<Tags tags={tags} />
 		<PublisherInfo publisher={publisher} />
@@ -74,7 +74,7 @@ const InstallButton = ({enabled, installed, onClick}: { enabled: boolean, instal
 	);
 };
 
-export const Header = ({ enabled, installed, name, description, tags, icon, publisher, onClick }: { enabled: boolean, installed: boolean, name: string, description: string, tags: string[], icon: React.ReactElement | string, publisher: Publisher, onClick: () => void }) => {
+export const Header = ({ enabled, installed, name, description, tags, icon, publisher, errored, errorMessage, onClick }: { enabled: boolean, installed: boolean, name: string, description: string, tags: string[], icon: React.ReactElement | string, publisher: Publisher, errored: boolean, errorMessage?: string, onClick: () => void }) => {
 	return (
 		<>
 			<div className={styles.Header}>
@@ -85,6 +85,8 @@ export const Header = ({ enabled, installed, name, description, tags, icon, publ
 					tags={tags}
 					description={description}
 					publisher={publisher}
+					errored={errored}
+					errorMessage={errorMessage}
 				/>
 				<InstallButton enabled={enabled} installed={installed} onClick={onClick} />
 			</div>

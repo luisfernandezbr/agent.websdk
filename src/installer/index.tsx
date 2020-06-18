@@ -6,16 +6,16 @@ export { default as Integration } from './types';
 import styles from './styles.less';
 
 export interface InstallerProps {
-    className?: string;
-    integration: Integration;
-    setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
-    getConfig: (integration: Integration) => Promise<{[key: string]: any}>;
-    setConfig: (integration: Integration, config: {[key: string]: any}) => Promise<void>;
-    onRemove: (integration: Integration) => Promise<void>;
-    onInstall: (integration: Integration) => Promise<void>;
+	className?: string;
+	integration: Integration;
+	setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
+	getConfig: (integration: Integration) => Promise<{ [key: string]: any }>;
+	setConfig: (integration: Integration, config: { [key: string]: any }) => Promise<void>;
+	onRemove: (integration: Integration) => Promise<void>;
+	onInstall: (integration: Integration) => Promise<void>;
 }
 
-const Frame = React.memo(React.forwardRef(({ url, name, onLoad}: any, ref: any) => {
+const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any) => {
 	return (
 		<iframe
 			ref={ref}
@@ -23,7 +23,7 @@ const Frame = React.memo(React.forwardRef(({ url, name, onLoad}: any, ref: any) 
 			src={url}
 			onLoad={onLoad}
 			sandbox="allow-scripts"
-			style={{display:'none', margin: '0', padding: '0', height: '100vh', width: '100%', backgroundColor: '#fff'}}
+			style={{ display: 'none', margin: '0', padding: '0', height: '100vh', width: '100%', backgroundColor: '#fff' }}
 		>
 		</iframe>
 	);
@@ -31,7 +31,7 @@ const Frame = React.memo(React.forwardRef(({ url, name, onLoad}: any, ref: any) 
 
 const Installer = (props: InstallerProps) => {
 	const ref = useRef<any>();
-	const [isInstalled, setIsInstalled] = useState(false);
+	const [isInstalled, setIsInstalled] = useState(props.integration.installed);
 	const [installEnabled, setInstallEnabled] = useState(false);
 	const [, setConfig] = useState<any>();
 	const [loaded, setLoaded] = useState(false);
@@ -58,26 +58,26 @@ const Installer = (props: InstallerProps) => {
 		}, 500);
 	}, [ref, isInstalled]);
 	useEffect(() => {
-		const handler = async(e: any) => {
+		const handler = async (e: any) => {
 			const { data } = e;
 			const { scope, command, refType } = data;
 			if (scope === 'INTEGRATION') {
 				switch (command) {
 					case 'setInstallEnabled': {
-                        const { value } = data;
-                        await props.setInstallEnabled(props.integration, value);
+						const { value } = data;
+						await props.setInstallEnabled(props.integration, value);
 						setInstallEnabled(value);
 						break;
 					}
 					case 'getConfig': {
-                        const config = await props.getConfig(props.integration);
+						const config = await props.getConfig(props.integration);
 						setConfig(config);
-						ref.current.contentWindow.postMessage({command: 'getConfig', config}, '*');
+						ref.current.contentWindow.postMessage({ command: 'getConfig', config }, '*');
 						break;
 					}
 					case 'setConfig': {
-                        const { value } = data;
-                        props.setConfig(props.integration, value);
+						const { value } = data;
+						props.setConfig(props.integration, value);
 						setConfig(value);
 						break;
 					}
@@ -85,7 +85,7 @@ const Installer = (props: InstallerProps) => {
 						const redirectURL = document.location.href;
 						const sep = redirectURL.indexOf('?') > 0 ? '&' : '?';
 						const url = redirectURL + (redirectURL.indexOf('integration=') < 0 ? sep + 'integration=redirect' : '');
-						ref.current.contentWindow.postMessage({command: 'getRedirectURL', url}, '*');
+						ref.current.contentWindow.postMessage({ command: 'getRedirectURL', url }, '*');
 						break;
 					}
 					case 'getAppOAuthURL': {
@@ -100,7 +100,7 @@ const Installer = (props: InstallerProps) => {
 							domain = 'pinpoint.com';
 						}
 						const url = `https://auth.api.${domain}/oauth/${refType}?redirect_to=${encodeURIComponent(redirectTo)}`;
-						ref.current.contentWindow.postMessage({command: 'getAppOAuthURL', url}, '*');
+						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', url }, '*');
 						break;
 					}
 					case 'setRedirectTo': {
@@ -121,14 +121,14 @@ const Installer = (props: InstallerProps) => {
 		if (isInstalled) {
 			// this is a removal
 			setIsInstalled(false);
-            setInstallEnabled(false);
-            await props.onRemove(props.integration);
+			setInstallEnabled(false);
+			await props.onRemove(props.integration);
 			const url = ref.current.getAttribute('src');
 			ref.current.setAttribute('src', '');
 			ref.current.setAttribute('src', url);
 		} else {
-            // this is an install
-            await props.onInstall(props.integration);
+			// this is an install
+			await props.onInstall(props.integration);
 			setIsInstalled(true);
 		}
 	}, [isInstalled]);
@@ -142,9 +142,11 @@ const Installer = (props: InstallerProps) => {
 				enabled={installEnabled}
 				icon={props.integration.icon}
 				publisher={props.integration.publisher}
+				errored={props.integration.errored}
+				errorMessage={props.integration.errorMessage}
 				onClick={onClick}
 			/>
-			{!loaded && <Loader centered style={{marginTop: '5rem'}} />}
+			{!loaded && <Loader centered style={{ marginTop: '5rem' }} />}
 			<Frame
 				ref={ref}
 				name={props.integration.name}
