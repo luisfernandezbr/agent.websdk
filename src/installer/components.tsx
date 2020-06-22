@@ -73,11 +73,11 @@ const PublisherDetail = ({name, installed, tags, description, publisher, errored
 const InstallButton = ({enabled, installed, onClick}: { enabled: boolean, installed: boolean, onClick: () => void }) => {
 	if (installed) {
 		return (
-			<Button onClick={onClick} style={{width: '90px'}} color="Red" weight={500} disabled={!enabled}><Icon icon={['fas', 'trash']} /><span>Uninstall</span></Button>
+			<Button onClick={onClick} className={styles.UninstallButton} color="Red" weight={500} disabled={!enabled}><Icon icon={['fas', 'trash']} /><span>Uninstall</span></Button>
 		);
 	}
 	return (
-		<Button onClick={onClick} style={{width: '90px'}} color="Green" weight={500} disabled={!enabled}><Icon icon={['fas', 'check']} /><span>Install</span></Button>
+		<Button onClick={onClick} className={styles.InstallButton}  color="Green" weight={500} disabled={!enabled}><Icon icon={['fas', 'check']} /><span>Install</span></Button>
 	);
 };
 
