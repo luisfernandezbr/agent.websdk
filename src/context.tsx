@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { IAppContext, IAppOAuthAuthorization } from './types';
+import { Config } from './config';
 
 interface IAppContextProps {
 	children: React.ReactNode;
@@ -16,10 +17,11 @@ export const AppContextProvider = ({
 	refType,
 	children,
 }: IAppContextProps) => {
+	const [loading, setLoading] = useState(true);
 	const [isFromRedirect, setIsFromRedirect] = useState(false);
 	const [currentURL, setCurrentURL] = useState<string>('');
 	const [installed, setInstalled] = useState<boolean>(false);
-	const [currentConfig, setCurrentConfig] = useState<{[key: string]: any}>({});
+	const [currentConfig, setCurrentConfig] = useState<Config>({});
 	const [authorization, setAuthorization] = useState<IAppOAuthAuthorization>();
 	const redirectPromise = useRef<any[]>();
 	const redirectOAuthPromise = useRef<any[]>();
@@ -33,7 +35,7 @@ export const AppContextProvider = ({
 			value,
 		}, '*');
 	}, []);
-	const setConfig = useCallback((value: { [key: string]: any }) => {
+	const setConfig = useCallback((value: Config) => {
 		window.parent.postMessage({
 			command: 'setConfig',
 			scope,
@@ -77,7 +79,7 @@ export const AppContextProvider = ({
 		return promise;
 	}, []);
 	const getConfig = useCallback(() => {
-		const promise = new Promise<{[key: string]: any}>((resolve, reject) => {
+		const promise = new Promise<Config>((resolve, reject) => {
 			configPromise.current = [resolve, reject];
 			window.parent.postMessage({
 				command: 'getConfig',
@@ -107,6 +109,7 @@ export const AppContextProvider = ({
 						setInstalled(_installed);
 						setCurrentConfig(_config);
 						setAuthorization(_authorization);
+						setLoading(false);
 						break;
 					}
 					case 'getConfig': {
@@ -177,6 +180,7 @@ export const AppContextProvider = ({
 				getAppOAuthURL,
 				isFromRedirect,
 				authorization,
+				loading,
 			}}
 		>
 			{children}

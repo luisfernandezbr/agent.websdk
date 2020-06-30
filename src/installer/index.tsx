@@ -3,14 +3,15 @@ import { Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
 export { default as Integration } from './types';
+import { Config } from '../config';
 import styles from './styles.less';
 
 export interface InstallerProps {
 	className?: string;
 	integration: Integration;
 	setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
-	getConfig: (integration: Integration) => Promise<{ [key: string]: any }>;
-	setConfig: (integration: Integration, config: { [key: string]: any }) => Promise<void>;
+	getConfig: (integration: Integration) => Promise<Config>;
+	setConfig: (integration: Integration, config: Config) => Promise<void>;
 	onRemove: (integration: Integration) => Promise<void>;
 	onInstall: (integration: Integration) => Promise<void>;
 }
@@ -22,7 +23,7 @@ const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any)
 			title={`integration-${name}`}
 			src={url}
 			onLoad={onLoad}
-			sandbox="allow-scripts"
+			sandbox="allow-scripts allow-modals"
 			style={{ display: 'none', margin: '0', padding: '0', height: '100vh', width: '100%', backgroundColor: '#fff' }}
 		>
 		</iframe>
@@ -72,7 +73,10 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'getConfig': {
-						const config = await props.getConfig(props.integration);
+						let config = await props.getConfig(props.integration);
+						if (!config) {
+							config = {};
+						}
 						setConfig(config);
 						ref.current.contentWindow.postMessage({ command: 'getConfig', config }, '*');
 						break;
