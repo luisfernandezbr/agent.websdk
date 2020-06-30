@@ -37,6 +37,7 @@ const AccountSelector = ({account, config}: {account: Account, config: Config}) 
 	);
 };
 
+// TODO: move this into less
 const tagStyles: React.CSSProperties = {
 	display: 'inline-flex',
 	boxSizing: 'border-box',
