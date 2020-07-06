@@ -1,10 +1,41 @@
 import { Config } from './config';
 
 export interface IAppOAuthAuthorization {
-	accessToken: string;
-	refreshToken?: string;
+	access_token: string;
+	refresh_token?: string;
 	scopes?: string;
+	url?: string;
 	created: number;
+}
+
+export interface IEntityError {
+	id: string;
+	ref_id: string;
+	error: string;
+}
+
+enum IProcessingState {
+	IDLE = 'IDLE',
+	EXPORTING = 'EXPORTING',
+};
+
+enum IInstalledLocation {
+	SELFMANAGED = 'PRIVATE',
+	CLOUD = 'CLOUD',
+};
+
+export interface IProcessingDetail {
+	createdDate?: number;
+	processed: boolean;
+	lastProcessedDate?: number;
+	lastExportRequestedDate?: number;
+	lastExportCompletedDate?: number;
+	state: IProcessingState;
+	throttled: boolean;
+	throttledUntilDate?: number;
+	paused: boolean;
+	entityErrors?: IEntityError[];
+	location: IInstalledLocation;
 }
 
 export interface IAppContext {
@@ -20,6 +51,8 @@ export interface IAppContext {
 	config: Config;
 	// authorization is passed if the current integration has an preauthorized OAuth token as part of the Pinpoint setup matching the refType of the integration
 	authorization?: IAppOAuthAuthorization;
+	// detail is the processing detail about setup and processing state of the integration
+	processingDetail?: IProcessingDetail;
 	// setInstallEnabled should be called to enable the "Install" button to indicate the integration is available to be installed
 	setInstallEnabled: (enabled: boolean) => void;
 	// setConfig should be called with any specific configuration that the integration needs and this configuration will be passed to the integration

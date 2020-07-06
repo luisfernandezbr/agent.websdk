@@ -11,8 +11,8 @@ export interface Auth {
 }
 
 export interface OAuth2Auth extends Auth {
-	accessToken: string;
-	refreshToken?: Maybe<string>;
+	access_token: string;
+	refresh_token?: Maybe<string>;
 	scopes?: Maybe<string>;
 	created: number;
 }
