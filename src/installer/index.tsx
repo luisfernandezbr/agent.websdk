@@ -24,7 +24,8 @@ const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any)
 			src={url}
 			onLoad={onLoad}
 			sandbox="allow-scripts allow-modals"
-			style={{ display: 'none', margin: '0', padding: '0', height: '100vh', width: '100%', backgroundColor: '#fff' }}
+			style={{ display: 'none' }}
+			className={styles.Frame}
 		>
 		</iframe>
 	);
@@ -154,7 +155,7 @@ const Installer = (props: InstallerProps) => {
 				errorMessage={props.integration.errorMessage}
 				onClick={onClick}
 			/>
-			{!loaded && <Loader centered style={{ marginTop: '5rem' }} />}
+			{!loaded && <Loader screen />}
 			<Frame
 				ref={ref}
 				name={props.integration.name}
