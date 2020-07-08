@@ -1,4 +1,4 @@
-// @import (reference) '~@pinpt/uic.next/theme.less';
+@import '../../node_modules/@pinpt/uic.next/theme.less';
 
 body {
 	height: 100vh;
@@ -19,7 +19,7 @@ body {
 		display: flex;
 		align-items: flex-start;
 		padding: 4.0rem;
-		border-bottom: 1px solid #E8E8EE;
+		border-bottom: @BorderStyle;
 
 		.Icon {
 			width: 4.0rem;
@@ -39,8 +39,8 @@ body {
 				align-items: center;
 
 				.Name {
-					font-weight: 600;
-					font-size: 1.5rem;
+					font-weight: @FontWeightStrong;
+					font-size: @FontSizeLarge;
 					flex: 0 0 auto;
 				}
 
@@ -49,11 +49,9 @@ body {
 						padding: 0.4rem 1.0rem;
 						display: inline-block;
 						border-radius: 0.2rem;
-						font-weight: 600;
-						color: #8F93A9;
-						background: #F3F4F6;
-						// color: @Mono400;
-						// background: @Mono100;
+						font-weight: @FontWeightStrong;
+						color: @Mono400;
+						background: @Mono100;
 						margin-left: 1.0rem;
 						font-size: 1.1rem;
 					}
@@ -67,10 +65,10 @@ body {
 			.Publisher {
 				display: flex;
 				align-items: center;
-				color: #8F93A9;
+				color: @Mono400;
 
 				span {
-					color: #8F93A9;
+					color: @Mono400;
 				}
 
 				a {
