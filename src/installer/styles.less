@@ -17,9 +17,15 @@ body {
 	.Header {
 		flex: 0 0 auto;
 		display: flex;
-		align-items: flex-start;
-		padding: 4.0rem;
+		flex-direction: column;
+		padding: 2.0rem 4.0rem 4.0rem;
 		border-bottom: @BorderStyle;
+
+		.Row {
+			display: flex;
+			align-items: flex-start;
+			margin-top: 2.0rem;
+		}
 
 		.Icon {
 			width: 4.0rem;
@@ -89,8 +95,14 @@ body {
 			}
 		}
 
+		.Button {
+			flex: 0 0 auto;
+			margin-left: 1.0rem;
+		}
+
 		.Error {
-			margin-top: 2.0rem;
+			flex: 1 1 100%;
+			margin-bottom: -2.0rem;
 
 			> div {
 				text-align: left;
