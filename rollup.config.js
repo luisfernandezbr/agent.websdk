@@ -21,11 +21,15 @@ export default {
 		postcss({
 			modules: {
 				generateScopedName: (name, filename) => {
-					const less = filename.match(/src\/(\w+)(?:\/\w+)*\/styles.less$/);
-					if (less) {
-						return `agent-websdk-${less[1]}-${name}`; // css modules for less class names, e.g. ui-FilterSimple-Dropdown
+					// css modules for less class names
+					const components = filename.match(/src\/components\/(\w+)(?:\/\w+)*\/styles.less$/);
+					const base = filename.match(/src\/(\w+)(?:\/\w+)*\/styles.less$/);
+					if (components) {
+						return `webSDK-${components[1]}-${name}`;
+					} else if (base) {
+						return `webSDK-${base[1]}-${name}`;
 					}
-					return name;
+					return `webSDK-${name}`;
 				}
 			}
 		}),

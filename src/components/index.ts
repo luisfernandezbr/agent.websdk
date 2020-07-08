@@ -1,4 +1,3 @@
-export { AskDialog } from './ask_dialog';
-export { OAuthConnect } from './oauth_connect';
-export { Checkbox } from './checkbox';
-export { Account, AccountsTable } from './accounts';
+export { AskDialog } from './AskDialog';
+export { OAuthConnect } from './OAuthConnect';
+export { Account, AccountsTable } from './Accounts';

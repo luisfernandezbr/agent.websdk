@@ -23,7 +23,7 @@ const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any)
 			title={`integration-${name}`}
 			src={url}
 			onLoad={onLoad}
-			sandbox="allow-scripts allow-modals"
+			sandbox="allow-scripts allow-popups allow-modals"
 			style={{ display: 'none' }}
 			className={styles.Frame}
 		>
@@ -142,7 +142,7 @@ const Installer = (props: InstallerProps) => {
 		}
 	}, [isInstalled]);
 	return (
-		<div className={[styles.Container, props.className].join(' ')}>
+		<div className={[styles.Wrapper, props.className].join(' ')}>
 			<Header
 				name={props.integration.name}
 				tags={props.integration.tags}
@@ -151,7 +151,7 @@ const Installer = (props: InstallerProps) => {
 				enabled={installEnabled}
 				icon={props.integration.icon}
 				publisher={props.integration.publisher}
-				errored={props.integration.errored}
+				hasError={props.integration.errored}
 				errorMessage={props.integration.errorMessage}
 				onClick={onClick}
 			/>

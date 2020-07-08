@@ -1,33 +1,44 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { Button, Dialog } from '@pinpt/uic.next';
+import styles from './styles.less';
 
-export const AskDialog = ({title, text, buttonOK, show, onChange, onCancel, onSubmit, textarea, value}: {title: string, text: string, buttonOK: string, show: boolean, onChange: (val: string) => void, onCancel: () => void, onSubmit: () => void, textarea: boolean, value: string}) => {
+interface AskDialogProps {
+	title: string,
+	text: string | React.ReactElement,
+	buttonSaveText: string,
+	open: boolean,
+	onChange: (val: string) => void,
+	onCancel: () => void,
+	onSubmit: () => void,
+	textArea: boolean,
+	value: string
+}
+
+export const AskDialog = ({title, text, buttonSaveText, open, onChange, onCancel, onSubmit, textArea, value}: AskDialogProps) => {
 	const ref = useRef<any>();
 	const [submit, setSubmit] = useState(false);
 	useEffect(() => {
-		if (show && ref?.current) {
+		if (open && ref?.current) {
 			ref.current.focus();
 			ref.current.select();
 		}
-	}, [ref, show]);
+	}, [ref, open]);
+
 	let field: React.ReactElement;
-	if (textarea) {
+
+	if (textArea) {
 		const onChangeHandler = useCallback((evt: any) => onChange(evt.target.value), []);
+
 		field = (
 			<textarea
 				ref={ref}
 				rows={5}
-				style={{
-					width: '450px',
-					fontSize: '1.5rem',
-					padding: '2px',
-					outline: 'none',
-				}}
 				value={value}
-				onChange={onChangeHandler} />
+				onChange={onChangeHandler}
+			/>
 		);
 	} else {
-		const onKeyHandler = useCallback((e: any) => {
+		const onChangeHandler = useCallback((e: any) => {
 			if (e.key === 'Enter') {
 				e.preventDefault();
 				e.stopPropagation();
@@ -36,41 +47,48 @@ export const AskDialog = ({title, text, buttonOK, show, onChange, onCancel, onSu
 				onChange(e.target.value);
 			}
 		}, []);
+
 		useEffect(() => {
 			if (submit) {
 				onSubmit();
 				setSubmit(false);
 			}
 		}, [submit, setSubmit]);
+
 		field = (
 			<input
 				ref={ref}
 				type="text"
 				value={value}
-				style={{
-					width: '450px',
-					fontSize: '1.5rem',
-					padding: '2px',
-					outline: 'none',
-				}}
-				onKeyUp={onKeyHandler}
-				onChange={onKeyHandler}
+				onKeyUp={onChangeHandler}
+				onChange={onChangeHandler}
 			/>
 		);
 	}
+
 	return (
-		<Dialog open={show} style={{background: 'transparent'}} centered={false}>
-			<h1>{title}</h1>
+		<Dialog
+			open={open}
+			className={styles.Wrapper}
+			onClickOutside={onCancel}
+		>
+			<h1>
+				{title}
+			</h1>
+
 			<p>
 				{text}
 			</p>
-			<p>
-				{field}
-			</p>
-			<div className="buttons">
-				<Button color="Mono" weight={500} onClick={onCancel}>Cancel</Button>
+
+			{field}
+
+			<div className="Buttons">
+				<Button color="Mono" weight={500} onClick={onCancel}>
+					Cancel
+				</Button>
+
 				<Button color="Green" weight={500} onClick={onSubmit}>
-					<>{buttonOK}</>
+					{buttonSaveText}
 				</Button>
 			</div>
 		</Dialog>	

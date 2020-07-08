@@ -11,7 +11,7 @@ interface HeaderProps {
 	tags: string[],
 	icon: React.ReactElement | string,
 	publisher: Publisher,
-	errored: boolean,
+	hasError: boolean,
 	errorMessage: string,
 	onClick: () => void
 }
@@ -62,7 +62,7 @@ export const Header = (props: HeaderProps) => {
 				</div>
 
 				{
-					props.errored && (
+					props.hasError && (
 						<Banner error className={styles.Error}>
 							<>
 								<Icon color={Theme.Red500} icon={['fas', 'exclamation-triangle']} />
