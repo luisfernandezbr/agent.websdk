@@ -1,5 +1,6 @@
 import React from 'react';
 import Integration from './types';
+import { IProcessingDetail } from '../types';
 import Installer from './index';
 import styles from './styles.less';
 
@@ -23,12 +24,13 @@ const onInstall = async (integration: Integration) => {
 	window.localStorage.setItem(`installer.${integration.refType}`, 'true');
 };
 
-const SimulatorInstaller = ({ integration }: { integration: Integration }) => {
+const SimulatorInstaller = ({ integration, processingDetail }: { integration: Integration, processingDetail?: IProcessingDetail }) => {
 	integration.installed = window.localStorage.getItem(`installer.${integration.refType}`) === 'true';
 	return (
 		<Installer
 			className={styles.Simulator}
 			integration={integration}
+			processingDetail={processingDetail}
 			setInstallEnabled={setInstallEnabled}
 			getConfig={getConfig}
 			setConfig={setConfig}

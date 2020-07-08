@@ -14,12 +14,12 @@ export interface IEntityError {
 	error: string;
 }
 
-enum IProcessingState {
+export enum IProcessingState {
 	IDLE = 'IDLE',
 	EXPORTING = 'EXPORTING',
 };
 
-enum IInstalledLocation {
+export enum IInstalledLocation {
 	SELFMANAGED = 'PRIVATE',
 	CLOUD = 'CLOUD',
 };

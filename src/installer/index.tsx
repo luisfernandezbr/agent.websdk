@@ -3,12 +3,14 @@ import { Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
 export { default as Integration } from './types';
+import { IProcessingDetail } from '../types';
 import { Config } from '../config';
 import styles from './styles.less';
 
 export interface InstallerProps {
 	className?: string;
 	integration: Integration;
+	processingDetail: IProcessingDetail;
 	setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
 	getConfig: (integration: Integration) => Promise<Config>;
 	setConfig: (integration: Integration, config: Config) => Promise<void>;
@@ -54,6 +56,7 @@ const Installer = (props: InstallerProps) => {
 				url,
 				installed: isInstalled,
 				redirected,
+				processingDetail: props.processingDetail
 			}, '*');
 			setTimeout(() => {
 				if (ref.current) ref.current.style.display = '';

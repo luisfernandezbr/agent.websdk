@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { IAppContext, IAppOAuthAuthorization } from './types';
+import { IAppContext, IAppOAuthAuthorization, IProcessingDetail } from './types';
 import { Config } from './config';
 
 interface IAppContextProps {
@@ -23,6 +23,7 @@ export const AppContextProvider = ({
 	const [installed, setInstalled] = useState<boolean>(false);
 	const [currentConfig, setCurrentConfig] = useState<Config>({});
 	const [authorization, setAuthorization] = useState<IAppOAuthAuthorization>();
+	const [processingDetail, setProcessingDetail] = useState<IProcessingDetail>();
 	const redirectPromise = useRef<any[]>();
 	const redirectOAuthPromise = useRef<any[]>();
 	const configPromise = useRef<any[]>();
@@ -103,12 +104,14 @@ export const AppContextProvider = ({
 							redirected: _redirected,
 							installed: _installed,
 							authorization: _authorization,
+							processingDetail: _processingDetail
 						} = data;
 						setIsFromRedirect(_redirected);
 						setCurrentURL(_url);
 						setInstalled(_installed);
 						setCurrentConfig(_config);
 						setAuthorization(_authorization);
+						setProcessingDetail(_processingDetail);
 						setLoading(false);
 						break;
 					}
@@ -181,6 +184,7 @@ export const AppContextProvider = ({
 				isFromRedirect,
 				authorization,
 				loading,
+				processingDetail,
 			}}
 		>
 			{children}
