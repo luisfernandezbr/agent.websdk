@@ -3,7 +3,7 @@ import { Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
 export { default as Integration } from './types';
-import { IProcessingDetail } from '../types';
+import { IProcessingDetail, IAppOAuthAuthorization } from '../types';
 import { Config } from '../config';
 import styles from './styles.less';
 
@@ -11,6 +11,7 @@ export interface InstallerProps {
 	className?: string;
 	integration: Integration;
 	processingDetail: IProcessingDetail;
+	authorization: IAppOAuthAuthorization;
 	setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
 	getConfig: (integration: Integration) => Promise<Config>;
 	setConfig: (integration: Integration, config: Config) => Promise<void>;
@@ -127,7 +128,7 @@ const Installer = (props: InstallerProps) => {
 			window.removeEventListener('message', handler);
 		};
 	}, []);
-	const onClick = useCallback(async () => {
+	const handleInstall = useCallback(async () => {
 		if (isInstalled) {
 			// this is a removal
 			setIsInstalled(false);
@@ -151,14 +152,17 @@ const Installer = (props: InstallerProps) => {
 				tags={props.integration.tags}
 				description={props.integration.description}
 				installed={isInstalled}
+				authorized={installEnabled} // TODO
+				authDate={props.authorization.created}
 				enabled={installEnabled}
 				icon={props.integration.icon}
 				publisher={props.integration.publisher}
 				hasError={props.integration.errored}
 				errorMessage={props.integration.errorMessage}
-				onClick={onClick}
+				handleInstall={handleInstall}
+				handleChangeAuth={() => {}} // TODO
 			/>
-			{!loaded && <Loader screen />}
+			{/* {!loaded && <Loader screen />} */}
 			<Frame
 				ref={ref}
 				name={props.integration.name}

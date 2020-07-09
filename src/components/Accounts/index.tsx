@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Button, ListPanel, Icon } from '@pinpt/uic.next';
+import { Button, ListPanel, Icon, Tooltip, Theme } from '@pinpt/uic.next';
 import { useIntegration } from '../../useIntegration';
 import { AskDialog } from '../AskDialog';
 import { Config } from '../../config';
@@ -46,31 +46,52 @@ const AccountSelector = ({account, config}: {account: Account, config: Config}) 
 	}, [setSelected, setConfig, setInstallEnabled, account, config, installed]);
 
 	return (
-		<div className={styles.Account}>
-			<input
-				type="checkbox"
-				checked={selected}
-				onChange={() => {
-					if (onChange) {
-						onChange(!selected);
-					}
-				}}
-			/>
-
-			<img alt={account.name} src={account.avatarUrl} />
-
-			<span>
-				{account.name}
-			</span>
-		</div>
+		<input
+			type="checkbox"
+			checked={selected}
+			onChange={() => {
+				if (onChange) {
+					onChange(!selected);
+				}
+			}}
+		/>
 	);
 };
 
 const buildAccountRow = (entity: string, account: Account, config: Config, onClick: (account: Account) => void) => {
+	const accountError = false; // TODO
+
 	return {
 		key: account.id,
-		left: <AccountSelector account={account} config={config} />,
-		center: <span className={styles.Subtext}>{account.description}</span>,
+		className: accountError ? styles.Error : null,
+		left: (
+			<div className={styles.Account}>
+				{
+					!accountError ? (
+						<AccountSelector account={account} config={config} />
+					) : (
+						<Tooltip
+							content={(
+								<>
+									TODO: Error message goes here
+								</>
+							)}
+						>
+							<Icon icon={['fas', 'exclamation-triangle']} color={Theme.Red500} />
+						</Tooltip>
+					)
+				}
+
+				<img alt={account.name} src={account.avatarUrl} />
+
+				<span>
+					{account.name}
+				</span>
+			</div>
+		),
+		center: (
+			<span className={styles.Subtext}>{account.description}</span>
+		),
 		right: (
 			<>
 				<span className={styles.EntityCount}>

@@ -1,11 +1,14 @@
 import React from 'react';
-import { Banner, Button, Icon, Theme } from '@pinpt/uic.next';
+import moment from 'moment';
+import { Banner, Button, Icon, Tooltip } from '@pinpt/uic.next';
 import { Publisher } from './types';
 import styles from './styles.less';
 
 interface HeaderProps {
 	enabled: boolean,
 	installed: boolean,
+	authorized: boolean,
+	authDate: number,
 	name: string,
 	description: string,
 	tags: string[],
@@ -13,7 +16,8 @@ interface HeaderProps {
 	publisher: Publisher,
 	hasError: boolean,
 	errorMessage: string,
-	onClick: () => void
+	handleInstall: () => void,
+	handleChangeAuth: () => void
 }
 
 export const Header = (props: HeaderProps) => {
@@ -63,22 +67,30 @@ export const Header = (props: HeaderProps) => {
 					</div>
 				</div>
 
-				<Button
-					onClick={props.onClick}
-					color="Mono"
-					weight={300}
-					className={styles.Button}
-				>
-					<>
-						<Icon icon={['fas', 'key']} />
-						Change Login
-					</>
-				</Button>
+				{
+					props.authorized && (
+						<Tooltip
+							content={<>Last authorized on {moment(props.authDate, 'x').format('MMM Do, YYYY')}</>}
+							className={styles.Button}
+						>
+							<Button
+								onClick={props.handleChangeAuth}
+								color="Mono"
+								weight={300}
+							>
+								<>
+									<Icon icon={['fas', 'key']} />
+									Change Credentials
+								</>
+							</Button>
+						</Tooltip>
+					)
+				}
 
 				{
 					props.installed ? (
 						<Button
-							onClick={props.onClick}
+							onClick={props.handleInstall}
 							color="Red"
 							weight={500}
 							disabled={!props.enabled}
@@ -91,7 +103,7 @@ export const Header = (props: HeaderProps) => {
 						</Button>
 					) : (
 						<Button
-							onClick={props.onClick}
+							onClick={props.handleInstall}
 							color="Green"
 							weight={500}
 							disabled={!props.enabled}
@@ -111,7 +123,7 @@ export const Header = (props: HeaderProps) => {
 					<div className={styles.Row}>
 						<Banner error className={styles.Error}>
 							<>
-								<Icon color={Theme.Red500} icon={['fas', 'exclamation-triangle']} />
+								<Icon icon={['fas', 'exclamation-triangle']} />
 								{props.errorMessage}
 							</>
 						</Banner>

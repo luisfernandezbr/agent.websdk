@@ -31,6 +31,7 @@ const SimulatorInstaller = ({ integration, processingDetail }: { integration: In
 			className={styles.Simulator}
 			integration={integration}
 			processingDetail={processingDetail}
+			authorization={JSON.parse(window.localStorage.getItem(`installer.config.${integration.refType}`))?.oauth2_auth || {}}
 			setInstallEnabled={setInstallEnabled}
 			getConfig={getConfig}
 			setConfig={setConfig}
