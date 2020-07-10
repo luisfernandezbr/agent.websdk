@@ -8,10 +8,11 @@ export enum FormType {
 }
 
 interface FormProps {
-	type: FormType
+	type: FormType,
+	name: string,
 }
 
-export const Form = ({type}: FormProps) => {
+export const Form = ({type, name}: FormProps) => {
 	return (
 		<div className={styles.Wrapper}>
 			<div className={styles.Content}>
