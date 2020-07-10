@@ -1,0 +1,51 @@
+@import '../../../node_modules/@pinpt/uic.next/theme.less';
+
+.Wrapper {
+	display: flex;
+	justify-content: center;
+
+	.Content {
+		flex: 0 1 500px;
+
+		h3 {
+			font-size: 2.1rem;
+			color: @Royal500;
+			font-weight: @FontWeightStrong;
+			margin-bottom: 1.0rem;
+		}
+
+		p {
+			margin-bottom: 2.0rem;
+		}
+
+		form {
+			label {
+				display: block;
+				margin-top: 2.0rem;
+				color: @Mono500;
+			}
+
+			input[type="text"],
+			input[type="url"],
+			input[type="password"] {
+				display: block;
+				margin-top: 0.5rem;
+				padding: 1.0rem;
+				outline: none;
+				border: 1px solid @Mono200;
+				width: 50%;
+				color: @Mono700;
+
+				&.Wide {
+					width: 100%;
+				}
+			}
+
+			input[type="submit"] {
+				.Button();
+				.Colors(Green, 500);
+				margin-top: 2.0rem;
+			}
+		}
+	}
+}

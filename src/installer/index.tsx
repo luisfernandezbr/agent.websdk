@@ -153,7 +153,7 @@ const Installer = (props: InstallerProps) => {
 				description={props.integration.description}
 				installed={isInstalled}
 				authorized={installEnabled} // TODO
-				authDate={props.authorization.created}
+				authDate={props.authorization.created} // TODO
 				enabled={installEnabled}
 				icon={props.integration.icon}
 				publisher={props.integration.publisher}
@@ -162,7 +162,7 @@ const Installer = (props: InstallerProps) => {
 				handleInstall={handleInstall}
 				handleChangeAuth={() => {}} // TODO
 			/>
-			{/* {!loaded && <Loader screen />} */}
+			{!loaded && <Loader screen />}
 			<Frame
 				ref={ref}
 				name={props.integration.name}

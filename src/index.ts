@@ -8,6 +8,8 @@ export {
 	AccountsTable,
 	AskDialog,
 	OAuthConnect,
+	Form,
+	FormType
 } from './components';
 export {
 	APIKeyAuth,

@@ -26,6 +26,6 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "@pinpt/uic.next": "1.0.96"
+    "@pinpt/uic.next": "1.0.103"
   }
 }
