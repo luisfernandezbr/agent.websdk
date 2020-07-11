@@ -10,8 +10,8 @@ import styles from './styles.less';
 export interface InstallerProps {
 	className?: string;
 	integration: Integration;
-	processingDetail: IProcessingDetail;
-	authorization: IAppOAuthAuthorization;
+	processingDetail?: IProcessingDetail;
+	authorization?: IAppOAuthAuthorization;
 	setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
 	getConfig: (integration: Integration) => Promise<Config>;
 	setConfig: (integration: Integration, config: Config) => Promise<void>;
