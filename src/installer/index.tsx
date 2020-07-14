@@ -152,8 +152,8 @@ const Installer = (props: InstallerProps) => {
 				tags={props.integration.tags}
 				description={props.integration.description}
 				installed={isInstalled}
-				authorized={installEnabled} // TODO
-				authDate={props.authorization.created} // TODO
+				authorized={props.authorization?.created > 0}
+				authDate={props.authorization?.created}
 				enabled={installEnabled}
 				icon={props.integration.icon}
 				publisher={props.integration.publisher}

@@ -68,7 +68,7 @@ export const Header = (props: HeaderProps) => {
 				</div>
 
 				{
-					props.authorized && (
+					props.authorized && props.authDate && (
 						<Tooltip
 							content={<>Last authorized on {moment(props.authDate, 'x').format('MMM Do, YYYY')}</>}
 							className={styles.Button}
