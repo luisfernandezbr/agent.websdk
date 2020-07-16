@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
-import { Loader } from '@pinpt/uic.next';
+import { Button, Dialog, Icon, Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
 export { default as Integration } from './types';
@@ -42,6 +42,7 @@ const Installer = (props: InstallerProps) => {
 	const [installEnabled, setInstallEnabled] = useState(false);
 	const [, setConfig] = useState<any>();
 	const [loaded, setLoaded] = useState(false);
+	const [showDialog, setShowDialog] = useState(false);
 	const onLoad = useCallback(() => {
 		if (!loaded) {
 			const redirected = document.location.search.indexOf('integration=redirect') > 0;
@@ -130,17 +131,19 @@ const Installer = (props: InstallerProps) => {
 			window.removeEventListener('message', handler);
 		};
 	}, []);
+	const dialogCancel = useCallback(() => {
+		setShowDialog(false);
+	}, []);
+	const dialogSubmit = useCallback(async () => {
+		setShowDialog(false);
+		// this is a removal
+		setIsInstalled(false);
+		setInstallEnabled(false);
+		await props.onRemove(props.integration);
+	}, []);
 	const handleInstall = useCallback(async () => {
 		if (isInstalled) {
-			// this is a removal
-			setIsInstalled(false);
-			setInstallEnabled(false);
-			await props.onRemove(props.integration);
-			if (ref.current) {
-				const url = ref.current.getAttribute('src');
-				ref.current.setAttribute('src', '');
-				ref.current.setAttribute('src', url);
-			}
+			setShowDialog(true);
 		} else {
 			// this is an install
 			await props.onInstall(props.integration);
@@ -152,6 +155,25 @@ const Installer = (props: InstallerProps) => {
 			ref.current.contentWindow.postMessage({ command: 'handleAuthChange' }, '*');
 		}
 	}, [ref.current]);
+	if (showDialog) {
+		return (
+			<Dialog>
+				<h1>Confirm Account Deletion</h1>
+				<p>
+					Are you sure you want to remove <strong>{props.integration.name}</strong>?
+				</p>
+				<div className="buttons">
+					<Button color="Mono" weight={500} onClick={dialogCancel}>Cancel</Button>
+					<Button color="Red" weight={500} onClick={dialogSubmit}>
+						<>
+							<Icon icon="trash" />
+							Delete Account
+						</>
+					</Button>
+				</div>
+			</Dialog>	
+		);
+	}
 	const authDate = props.authorization?.authorizer?.created;
 	const authName = props.authorization?.authorizer?.name;
 	return (

@@ -18,6 +18,7 @@ const setConfig = async (integration: Integration, config: { [key: string]: any 
 const onRemove = async (integration: Integration) => {
 	window.localStorage.removeItem(`installer.${integration.refType}`);
 	window.localStorage.removeItem(`installer.config.${integration.refType}`);
+	window.location.reload();
 };
 
 const onInstall = async (integration: Integration) => {
