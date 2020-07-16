@@ -40,9 +40,9 @@ export const OAuthConnect = ({ name, reauth }: OAuthConnectProps) => {
 
 				<p>
 					Use the button below to redirect to {name} to grant permission for Pinpoint to access your {name} data.
-					Once authorized, you will automatically be returned to this screen 
+					Once authorized, you will automatically be returned to this screen to
 					{
-						reauth ? 'to configure your account.' : 'to complete the installation process.'
+						reauth ? ' configure your account.' : 'complete the installation process.'
 					}
 				</p>
 
