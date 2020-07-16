@@ -33,13 +33,17 @@ export const OAuthConnect = ({ name, reauth }: OAuthConnectProps) => {
 				{
 					reauth && (
 						<p>
-							We are unable to connect to your {name} data with the previously provided authorization.
+							Re-authorize to connect to your {name} data with Pinpoint.
 						</p>
 					)
 				}
 
 				<p>
-					Use the button below to give Pinpoint permission to access your {name} data. Once you're done, you will be returned to this screen to complete the installation process.
+					Use the button below to redirect to {name} to grant permission for Pinpoint to access your {name} data.
+					Once authorized, you will automatically be returned to this screen 
+					{
+						reauth ? 'to configure your account.' : 'to complete the installation process.'
+					}
 				</p>
 
 				<Button color="Green" weight={500} onClick={onClick}>
