@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { IAppContext, IAppOAuthAuthorization, IProcessingDetail } from './types';
+import { IAppContext, IAppAuthorization, IProcessingDetail } from './types';
 import { Config } from './config';
 
 interface IAppContextProps {
@@ -19,10 +19,11 @@ export const AppContextProvider = ({
 }: IAppContextProps) => {
 	const [loading, setLoading] = useState(true);
 	const [isFromRedirect, setIsFromRedirect] = useState(false);
+	const [isFromReAuth, setIsFromReAuth] = useState(false);
 	const [currentURL, setCurrentURL] = useState<string>('');
 	const [installed, setInstalled] = useState<boolean>(false);
 	const [currentConfig, setCurrentConfig] = useState<Config>({});
-	const [authorization, setAuthorization] = useState<IAppOAuthAuthorization>();
+	const [authorization, setAuthorization] = useState<IAppAuthorization>();
 	const [processingDetail, setProcessingDetail] = useState<IProcessingDetail>();
 	const redirectPromise = useRef<any[]>();
 	const redirectOAuthPromise = useRef<any[]>();
@@ -91,6 +92,7 @@ export const AppContextProvider = ({
 		});
 		return promise;
 	}, []);
+	const onReAuthed = useCallback(() => setIsFromReAuth(false), []);
 	useEffect(() => {
 		const handler = async(e: any) => {
 			if (e.data) {
@@ -154,6 +156,10 @@ export const AppContextProvider = ({
 						}
 						break;
 					}
+					case 'handleAuthChange': {
+						setIsFromReAuth(true);
+						break;
+					}
 					default: break;
 				}
 			}
@@ -182,9 +188,11 @@ export const AppContextProvider = ({
 				getRedirectURL,
 				getAppOAuthURL,
 				isFromRedirect,
+				isFromReAuth,
 				authorization,
 				loading,
 				processingDetail,
+				onReAuthed,
 			}}
 		>
 			{children}

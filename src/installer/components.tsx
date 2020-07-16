@@ -5,19 +5,20 @@ import { Publisher } from './types';
 import styles from './styles.less';
 
 interface HeaderProps {
-	enabled: boolean,
-	installed: boolean,
-	authorized: boolean,
-	authDate: number,
-	name: string,
-	description: string,
-	tags: string[],
-	icon: React.ReactElement | string,
-	publisher: Publisher,
-	hasError: boolean,
-	errorMessage: string,
-	handleInstall: () => void,
-	handleChangeAuth: () => void
+	enabled: boolean;
+	installed: boolean;
+	authorized: boolean;
+	authDate?: number;
+	authName?: string;
+	name: string;
+	description: string;
+	tags: string[];
+	icon: React.ReactElement | string;
+	publisher: Publisher;
+	hasError: boolean;
+	errorMessage: string;
+	handleInstall: () => void;
+	handleChangeAuth: () => void;
 }
 
 export const Header = (props: HeaderProps) => {
@@ -70,7 +71,7 @@ export const Header = (props: HeaderProps) => {
 				{
 					props.authorized && props.authDate && (
 						<Tooltip
-							content={<>Last authorized on {moment(props.authDate, 'x').format('MMM Do, YYYY')}</>}
+							content={<>Last authorized on {moment(props.authDate, 'x').format('MMM Do, YYYY')} by {props.authName}</>}
 							className={styles.Button}
 						>
 							<Button

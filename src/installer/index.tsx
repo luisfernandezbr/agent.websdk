@@ -1,17 +1,19 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
 export { default as Integration } from './types';
-import { IProcessingDetail, IAppOAuthAuthorization } from '../types';
+import { IProcessingDetail, IAppAuthorization } from '../types';
 import { Config } from '../config';
 import styles from './styles.less';
 
+type Maybe<T> = T | undefined | null;
+
 export interface InstallerProps {
-	className?: string;
+	className?: Maybe<string>;
 	integration: Integration;
-	processingDetail?: IProcessingDetail;
-	authorization?: IAppOAuthAuthorization;
+	processingDetail?: Maybe<IProcessingDetail>;
+	authorization?: Maybe<IAppAuthorization>;
 	setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
 	getConfig: (integration: Integration) => Promise<Config>;
 	setConfig: (integration: Integration, config: Config) => Promise<void>;
@@ -145,6 +147,13 @@ const Installer = (props: InstallerProps) => {
 			setIsInstalled(true);
 		}
 	}, [isInstalled]);
+	const handleAuthChange = useCallback(() => {
+		if (ref.current) {
+			ref.current.contentWindow.postMessage({ command: 'handleAuthChange' }, '*');
+		}
+	}, [ref.current]);
+	const authDate = props.authorization?.authorizer?.created;
+	const authName = props.authorization?.authorizer?.name;
 	return (
 		<div className={[styles.Wrapper, props.className].join(' ')}>
 			<Header
@@ -152,15 +161,16 @@ const Installer = (props: InstallerProps) => {
 				tags={props.integration.tags}
 				description={props.integration.description}
 				installed={isInstalled}
-				authorized={props.authorization?.created > 0}
-				authDate={props.authorization?.created}
+				authorized={authDate > 0}
+				authDate={authDate}
+				authName={authName}
 				enabled={installEnabled}
 				icon={props.integration.icon}
 				publisher={props.integration.publisher}
 				hasError={props.integration.errored}
 				errorMessage={props.integration.errorMessage}
 				handleInstall={handleInstall}
-				handleChangeAuth={() => {}} // TODO
+				handleChangeAuth={handleAuthChange}
 			/>
 			{!loaded && <Loader screen />}
 			<Frame

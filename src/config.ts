@@ -6,26 +6,29 @@ export enum IntegrationType {
 	SELFMANAGED = 'SELFMANAGED',
 };
 
+export interface Authorizer {
+	created: number;
+	profile_id: string;
+	name: string;
+}
+
 export interface Auth {
-	url?: string;
+	url?: Maybe<string>;
 }
 
 export interface OAuth2Auth extends Auth {
 	access_token: string;
 	refresh_token?: Maybe<string>;
 	scopes?: Maybe<string>;
-	created: number;
 }
 
 export interface BasicAuth extends Auth {
 	username: string;
 	password: string;
-	created: number;
 }
 
 export interface APIKeyAuth extends Auth {
 	apikey: string;
-	created: number;
 }
 
 export interface ConfigAccount {
@@ -43,5 +46,6 @@ export interface Config extends Bag {
 	oauth2_auth?: Maybe<OAuth2Auth>;
 	basic_auth?: Maybe<BasicAuth>;
 	apikey_auth?: Maybe<APIKeyAuth>;
+	authorizer?: Maybe<Authorizer>;
 	accounts?: Maybe<{[id: string]: ConfigAccount}>;
 }
