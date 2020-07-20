@@ -12,4 +12,4 @@ This code is part of the generated Integration for the Agent SDK.
 
 ## License
 
-All of this code is Copyright &copy; 22020 by Pinpoint Software, Inc. and licensed under the MIT License.
+All of this code is Copyright &copy; 2020 by Pinpoint Software, Inc. and licensed under the MIT License.
