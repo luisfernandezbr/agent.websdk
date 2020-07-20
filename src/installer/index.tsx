@@ -28,7 +28,7 @@ const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any)
 			title={`integration-${name}`}
 			src={url}
 			onLoad={onLoad}
-			sandbox="allow-scripts allow-popups allow-modals"
+			sandbox="allow-scripts allow-popups allow-modals allow-forms"
 			style={{ display: 'none' }}
 			className={styles.Frame}
 		>
@@ -171,7 +171,7 @@ const Installer = (props: InstallerProps) => {
 						</>
 					</Button>
 				</div>
-			</Dialog>	
+			</Dialog>
 		);
 	}
 	const authDate = props.authorization?.authorizer?.created;
