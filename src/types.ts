@@ -8,7 +8,7 @@ interface IAuthorizer {
 	name: string;
 }
 
-interface IAuth {
+export interface IAuth {
 	url?: Maybe<string>;
 }
 
@@ -60,6 +60,8 @@ export interface IProcessingDetail {
 export interface IAppContext {
 	// loading will return true if the context is loading the integration
 	loading: boolean;
+	// setLoading will set the value of loading
+	setLoading: (val: boolean) => void;
 	// installed will return true if the integration is already installed and you're in edit mode
 	installed: boolean;
 	// isFromRedirect will return true if the integration is loaded after a redirect during installation
