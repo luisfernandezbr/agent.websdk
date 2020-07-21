@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, Dialog } from '@pinpt/uic.next';
 import styles from './styles.less';
+import { useIntegration } from '../../useIntegration';
 
 export enum FormType {
 	BASIC = 'BASIC',
@@ -12,7 +12,22 @@ interface FormProps {
 	name: string,
 }
 
-export const Form = ({type, name}: FormProps) => {
+export const Form = ({ type, name }: FormProps) => {
+	const { config, setConfig } = useIntegration();
+
+	function onSubmit() {
+		var url: HTMLInputElement = document.getElementsByName('Form.URL')[0] as any;
+		if (type === FormType.BASIC) {
+			var username: HTMLInputElement = document.getElementsByName('Form.USERNAME')[0] as any;
+			var password: HTMLInputElement = document.getElementsByName('Form.PASSWORD')[0] as any;
+			config.basic_auth = { username: username.value, password: password.value, url: url.value };
+		} else {
+			var apikey: HTMLInputElement = document.getElementsByName('Form.APIKEY')[0] as any;
+			config.apikey_auth = { apikey: apikey.value, url: url.value };
+		}
+		setConfig(config);
+	}
+
 	return (
 		<div className={styles.Wrapper}>
 			<div className={styles.Content}>
@@ -24,7 +39,7 @@ export const Form = ({type, name}: FormProps) => {
 					Please provide the authentication credentials necessary to connect to your {name} instance.
 				</p>
 
-				<form>
+				<form onSubmit={onSubmit}>
 					<div>
 						<label htmlFor="Form.URL">
 							Instance URL
@@ -50,13 +65,13 @@ export const Form = ({type, name}: FormProps) => {
 								</div>
 							</>
 						) : (
-							<div>
-								<label htmlFor="Form.URL">
-									API Key
+								<div>
+									<label htmlFor="Form.URL">
+										API Key
 								</label>
-								<input type="text" name="Form.APIKEY" className={styles.Wide} />
-							</div>
-						)
+									<input type="text" name="Form.APIKEY" className={styles.Wide} />
+								</div>
+							)
 					}
 
 					<div>
@@ -67,6 +82,6 @@ export const Form = ({type, name}: FormProps) => {
 					</div>
 				</form>
 			</div>
-		</div>	
+		</div>
 	);
 };
