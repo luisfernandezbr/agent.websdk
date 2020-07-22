@@ -9,7 +9,7 @@ export interface Account {
 	id: string;
 	name: string;
 	description: string;
-	avatarUrl: string;
+	avatarUrl?: string;
 	totalCount: number;
 	type: 'USER' | 'ORG';
 	public: boolean;
@@ -82,7 +82,7 @@ const buildAccountRow = (entity: string, account: Account, config: Config, onCli
 					)
 				}
 
-				<img alt={account.name} src={account.avatarUrl} />
+				{ account.avatarUrl && <img alt={account.name} src={account.avatarUrl} /> }
 
 				<span>
 					{account.name}
