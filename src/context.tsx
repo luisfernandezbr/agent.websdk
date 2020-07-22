@@ -94,7 +94,7 @@ export const AppContextProvider = ({
 	}, []);
 	const onReAuthed = useCallback(() => setIsFromReAuth(false), []);
 	useEffect(() => {
-		const handler = async(e: any) => {
+		const handler = async (e: any) => {
 			if (e.data) {
 				const { data } = e;
 				const { command } = data;
@@ -191,6 +191,7 @@ export const AppContextProvider = ({
 				isFromReAuth,
 				authorization,
 				loading,
+				setLoading,
 				processingDetail,
 				onReAuthed,
 			}}
