@@ -18,11 +18,17 @@
 			margin-bottom: 2.0rem;
 		}
 
-		form {
+		.Form {
 			label {
-				display: block;
+				display: flex;
+				flex: 1 0 1;
 				margin-top: 2.0rem;
 				color: @Mono500;
+
+				span {
+					margin-left: auto;
+					margin-right: -1rem;
+				}
 			}
 
 			input[type="text"],
@@ -41,7 +47,7 @@
 				}
 			}
 
-			input[type="submit"] {
+			input[type="button"] {
 				.Button();
 				.Colors(Green, 500);
 				margin-top: 2.0rem;
