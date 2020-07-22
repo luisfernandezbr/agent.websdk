@@ -17,10 +17,10 @@ interface FormProps {
 export const Form = ({ type, name, callback }: FormProps) => {
 	const { config, setConfig, loading, setLoading } = useIntegration();
 
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
-	const [apikey, setApiKey] = useState("");
-	const [url, setUrl] = useState("");
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+	const [apikey, setApiKey] = useState('');
+	const [url, setUrl] = useState('');
 
 	async function onSubmit() {
 		setLoading(true)
