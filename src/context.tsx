@@ -28,6 +28,7 @@ export const AppContextProvider = ({
 	const redirectPromise = useRef<any[]>();
 	const redirectOAuthPromise = useRef<any[]>();
 	const configPromise = useRef<any[]>();
+
 	const setInstallEnabled = useCallback((value: boolean) => {
 		window.parent.postMessage({
 			command: 'setInstallEnabled',
@@ -49,6 +50,15 @@ export const AppContextProvider = ({
 	const setRedirectTo = useCallback((url: string) => {
 		window.parent.postMessage({
 			command: 'setRedirectTo',
+			scope,
+			publisher,
+			refType,
+			url,
+		}, '*');
+	}, []);
+	const setAppOAuthURL = useCallback((url: string) => {
+		window.parent.postMessage({
+			command: 'setAppOAuthURL',
 			scope,
 			publisher,
 			refType,
@@ -92,6 +102,7 @@ export const AppContextProvider = ({
 		});
 		return promise;
 	}, []);
+
 	const onReAuthed = useCallback(() => setIsFromReAuth(false), []);
 	useEffect(() => {
 		const handler = async (e: any) => {
@@ -187,6 +198,7 @@ export const AppContextProvider = ({
 				config: currentConfig,
 				getRedirectURL,
 				getAppOAuthURL,
+				setAppOAuthURL,
 				isFromRedirect,
 				isFromReAuth,
 				authorization,
@@ -197,7 +209,7 @@ export const AppContextProvider = ({
 			}}
 		>
 			{children}
-		</AppContext.Provider>
+		</AppContext.Provider >
 	);
 };
 

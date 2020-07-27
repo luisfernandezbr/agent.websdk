@@ -43,6 +43,8 @@ const Installer = (props: InstallerProps) => {
 	const [, setConfig] = useState<any>();
 	const [loaded, setLoaded] = useState(false);
 	const [showDialog, setShowDialog] = useState(false);
+	const [oauthURL, setOAuthURL] = useState('');
+
 	const onLoad = useCallback(() => {
 		if (!loaded) {
 			const redirected = document.location.search.indexOf('integration=redirect') > 0;
@@ -95,6 +97,11 @@ const Installer = (props: InstallerProps) => {
 						setConfig(value);
 						break;
 					}
+					case 'setAppOAuthURL': {
+						const { url } = data;
+						setOAuthURL(url);
+						break;
+					}
 					case 'getRedirectURL': {
 						const redirectURL = document.location.href;
 						const sep = redirectURL.indexOf('?') > 0 ? '&' : '?';
@@ -113,7 +120,13 @@ const Installer = (props: InstallerProps) => {
 						} else {
 							domain = 'pinpoint.com';
 						}
-						const url = `https://auth.api.${domain}/oauth/${refType}?redirect_to=${encodeURIComponent(redirectTo)}`;
+						let url: string
+						if (oauthURL != '') {
+							url = oauthURL;
+						} else {
+							url = `https://auth.api.${domain}/oauth/${refType}`;
+						}
+						url += `?redirect_to=${encodeURIComponent(redirectTo)}`
 						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', url }, '*');
 						break;
 					}
@@ -130,7 +143,7 @@ const Installer = (props: InstallerProps) => {
 		return () => {
 			window.removeEventListener('message', handler);
 		};
-	}, []);
+	}, [oauthURL]);
 	const dialogCancel = useCallback(() => {
 		setShowDialog(false);
 	}, []);
