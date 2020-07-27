@@ -126,7 +126,12 @@ const Installer = (props: InstallerProps) => {
 						} else {
 							url = `https://auth.api.${domain}/oauth/${refType}`;
 						}
-						url += `?redirect_to=${encodeURIComponent(redirectTo)}`
+						if (url.indexOf('?') == -1) {
+							url += '?';
+						} else {
+							url += '&';
+						}
+						url += `redirect_to=${encodeURIComponent(redirectTo)}`
 						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', url }, '*');
 						break;
 					}
