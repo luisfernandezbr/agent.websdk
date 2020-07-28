@@ -12,10 +12,36 @@ export enum FormType {
 interface FormProps {
 	type: FormType;
 	name: string;
+	form?: {
+		// the url prompt
+		url?: {
+			display: string;
+			help: string;
+		};
+		basic?: {
+			// the username prompt
+			username?: {
+				display: string;
+				help: string;
+			};
+			// the password prompt
+			password?: {
+				display: string;
+				help: string;
+			};
+		},
+		api?: {
+			// the apikey prompt
+			apikey?: {
+				display: string;
+				help: string;
+			};
+		}
+	};
 	callback: (auth: IAuth) => Promise<boolean>;
 }
 
-export const Form = ({ type, name, callback }: FormProps) => {
+export const Form = ({ type, name, form, callback }: FormProps) => {
 	const { config, setConfig } = useIntegration();
 
 	const [disabled, setDisabled] = useState(true);
@@ -68,9 +94,9 @@ export const Form = ({ type, name, callback }: FormProps) => {
 				<div className={styles.Form}>
 					<div>
 						<label htmlFor="Form.URL">
-							Instance URL
+							{form?.url?.display || 'Instance URL'}
 							<span>
-								<Tooltip content={<>The URL to use for connecting to your instance. The Agent must be able to reach this URL from the network location it will be installed.</>}>
+								<Tooltip content={<>{form?.url?.help || 'The URL to use for connecting to your instance. The Agent must be able to reach this URL from the network location it will be installed.'}</>}>
 									<Icon icon="info-circle" />
 								</Tooltip>
 							</span>
@@ -83,9 +109,9 @@ export const Form = ({ type, name, callback }: FormProps) => {
 							<>
 								<div>
 									<label htmlFor="Form.USERNAME">
-										Username
+									{form?.basic?.username?.display || 'Username'}
 										<span>
-											<Tooltip content={<>The Username to use for connecting to your instance.</>}>
+											<Tooltip content={<>{form?.basic?.username?.help || 'The Username to use for connecting to your instance.'}</>}>
 												<Icon icon="info-circle" />
 											</Tooltip>
 										</span>
@@ -95,9 +121,9 @@ export const Form = ({ type, name, callback }: FormProps) => {
 
 								<div>
 									<label htmlFor="Form.PASSWORD">
-										Password
+										{form?.basic?.password?.display || 'Password'}
 										<span>
-											<Tooltip content={<>The Password to use for connecting to your instance.</>}>
+											<Tooltip content={<>{form?.basic?.password?.help || 'The Password to use for connecting to your instance.'}</>}>
 												<Icon icon="info-circle" />
 											</Tooltip>
 										</span>
@@ -108,9 +134,9 @@ export const Form = ({ type, name, callback }: FormProps) => {
 						) : (
 								<div>
 									<label htmlFor="Form.APIKEY">
-										API Key
+										{form?.api?.apikey?.display || 'API Key'}
 										<span>
-											<Tooltip content={<>The APIKey which is used to connect to your instance.</>}>
+											<Tooltip content={<>{form?.api?.apikey?.help || 'The APIKey which is used to connect to your instance.'}</>}>
 												<Icon icon="info-circle" />
 											</Tooltip>
 										</span>
