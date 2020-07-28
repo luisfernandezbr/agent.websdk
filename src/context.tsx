@@ -209,7 +209,7 @@ export const AppContextProvider = ({
 			}}
 		>
 			{children}
-		</AppContext.Provider >
+		</AppContext.Provider>
 	);
 };
 

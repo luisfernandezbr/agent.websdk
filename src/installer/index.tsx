@@ -121,7 +121,7 @@ const Installer = (props: InstallerProps) => {
 							domain = 'pinpoint.com';
 						}
 						let url: string
-						if (oauthURL != '') {
+						if (oauthURL !== '') {
 							url = oauthURL;
 						} else {
 							url = `https://auth.api.${domain}/oauth/${refType}`;
