@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Dialog, Icon, Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
@@ -8,6 +8,8 @@ import { Config } from '../config';
 import styles from './styles.less';
 
 type Maybe<T> = T | undefined | null;
+
+const SOURCE = 'agent.websdk';
 
 export interface InstallerProps {
 	className?: Maybe<string>;
@@ -40,7 +42,7 @@ const Installer = (props: InstallerProps) => {
 	const ref = useRef<any>();
 	const [isInstalled, setIsInstalled] = useState(props.integration.installed);
 	const [installEnabled, setInstallEnabled] = useState(false);
-	const [, setConfig] = useState<any>();
+	const currentConfig = useRef<Config>({});
 	const [loaded, setLoaded] = useState(false);
 	const [showDialog, setShowDialog] = useState(false);
 	const onLoad = useCallback(() => {
@@ -57,6 +59,7 @@ const Installer = (props: InstallerProps) => {
 			}
 			ref.current.contentWindow.postMessage({
 				command: 'INIT',
+				source: SOURCE,
 				url,
 				installed: isInstalled,
 				redirected,
@@ -65,14 +68,14 @@ const Installer = (props: InstallerProps) => {
 			setTimeout(() => {
 				if (ref.current) ref.current.style.display = '';
 				setLoaded(true);
-			}, 500);
+			}, 100);
 		}
 	}, [ref, isInstalled, loaded]);
 	useEffect(() => {
 		const handler = async (e: any) => {
 			const { data } = e;
-			const { scope, command, refType } = data;
-			if (scope === 'INTEGRATION') {
+			const { scope, command, refType, source } = data;
+			if (scope === 'INTEGRATION' && source === SOURCE ) {
 				switch (command) {
 					case 'setInstallEnabled': {
 						const { value } = data;
@@ -85,21 +88,24 @@ const Installer = (props: InstallerProps) => {
 						if (!config) {
 							config = {};
 						}
-						setConfig(config);
-						ref.current.contentWindow.postMessage({ command: 'getConfig', config }, '*');
+						currentConfig.current = config;
+						ref.current.contentWindow.postMessage({ command: 'getConfig', source: SOURCE, config }, '*');
 						break;
 					}
 					case 'setConfig': {
 						const { value } = data;
 						props.setConfig(props.integration, value);
-						setConfig(value);
+						if (JSON.stringify(currentConfig.current) !== JSON.stringify(value)) {
+							currentConfig.current = value;
+							ref.current.contentWindow.postMessage({ command: 'setConfig', source: SOURCE, config: value }, '*');
+						}
 						break;
 					}
 					case 'getRedirectURL': {
 						const redirectURL = document.location.href;
 						const sep = redirectURL.indexOf('?') > 0 ? '&' : '?';
 						const url = redirectURL + (redirectURL.indexOf('integration=') < 0 ? sep + 'integration=redirect' : '');
-						ref.current.contentWindow.postMessage({ command: 'getRedirectURL', url }, '*');
+						ref.current.contentWindow.postMessage({ command: 'getRedirectURL', source: SOURCE, url }, '*');
 						break;
 					}
 					case 'getAppOAuthURL': {
@@ -114,7 +120,7 @@ const Installer = (props: InstallerProps) => {
 							domain = 'pinpoint.com';
 						}
 						const url = `https://auth.api.${domain}/oauth/${refType}?redirect_to=${encodeURIComponent(redirectTo)}`;
-						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', url }, '*');
+						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', source: SOURCE, url }, '*');
 						break;
 					}
 					case 'setRedirectTo': {
@@ -152,7 +158,7 @@ const Installer = (props: InstallerProps) => {
 	}, [isInstalled]);
 	const handleAuthChange = useCallback(() => {
 		if (ref.current) {
-			ref.current.contentWindow.postMessage({ command: 'handleAuthChange' }, '*');
+			ref.current.contentWindow.postMessage({ command: 'handleAuthChange', source: SOURCE }, '*');
 		}
 	}, [ref.current]);
 	if (showDialog) {

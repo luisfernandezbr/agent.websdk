@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Icon, Tooltip } from '@pinpt/uic.next';
+import { Banner, Button, Icon, Tooltip } from '@pinpt/uic.next';
 import styles from './styles.less';
 import { useIntegration } from '../../useIntegration';
 import { IAuth, IAppBasicAuth, IAPIKeyAuth } from 'types';
@@ -38,7 +38,7 @@ interface FormProps {
 			};
 		}
 	};
-	callback: (auth: IAuth) => Promise<boolean>;
+	callback: (auth: IAuth) => Promise<void>;
 }
 
 export const Form = ({ type, name, form, callback }: FormProps) => {
@@ -49,6 +49,7 @@ export const Form = ({ type, name, form, callback }: FormProps) => {
 	const [password, setPassword] = useState('');
 	const [apikey, setApiKey] = useState('');
 	const [url, setUrl] = useState('');
+	const [error, setError] = useState();
 
 	useEffect(() => {
 		if (type === FormType.BASIC) {
@@ -56,26 +57,28 @@ export const Form = ({ type, name, form, callback }: FormProps) => {
 		} else {
 			setDisabled(!url || !apikey);
 		}
+		setError(null);
 	}, [username, password, apikey, url]);
 
 	const onClick = useCallback(() => {
+		setDisabled(true);
 		const execute = async() => {
-			if (type === FormType.BASIC) {
-				let auth = { username, password, url } as IAppBasicAuth
-				let success = await callback(auth);
-				if (!success) {
-					return;
+			try {
+				if (type === FormType.BASIC) {
+					let auth = { username, password, url } as IAppBasicAuth
+					await callback(auth);
+					config.basic_auth = auth;
+				} else {
+					let auth = { apikey, url } as IAPIKeyAuth;
+					await callback(auth);
+					config.apikey_auth = auth;
 				}
-				config.basic_auth = auth;
-			} else {
-				let auth = { apikey, url } as IAPIKeyAuth;
-				let success = await callback(auth);
-				if (!success) {
-					return;
-				}
-				config.apikey_auth = auth;
+				setError(null);
+				setConfig(config);
+				setDisabled(false);
+			} catch (ex) {
+				setError(ex.message);
 			}
-			setConfig(config);
 		}
 		execute();
 	}, [config, username, password, apikey, url]);
@@ -90,6 +93,8 @@ export const Form = ({ type, name, form, callback }: FormProps) => {
 				<p>
 					Please provide the authentication credentials necessary to connect to your {name} instance.
 				</p>
+
+				{ error && <Banner error>{error}</Banner> }
 
 				<div className={styles.Form}>
 					<div>

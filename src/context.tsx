@@ -9,6 +9,7 @@ interface IAppContextProps {
 }
 
 const scope = 'INTEGRATION';
+const source = 'agent.websdk';
 
 const AppContext = React.createContext<IAppContext>({} as IAppContext);
 
@@ -22,7 +23,8 @@ export const AppContextProvider = ({
 	const [isFromReAuth, setIsFromReAuth] = useState(false);
 	const [currentURL, setCurrentURL] = useState<string>('');
 	const [installed, setInstalled] = useState<boolean>(false);
-	const [currentConfig, setCurrentConfig] = useState<Config>({});
+	const [, setRerender] = useState(0);
+	const currentConfig = useRef<Config>({});
 	const [authorization, setAuthorization] = useState<IAppAuthorization>();
 	const [processingDetail, setProcessingDetail] = useState<IProcessingDetail>();
 	const redirectPromise = useRef<any[]>();
@@ -30,6 +32,7 @@ export const AppContextProvider = ({
 	const configPromise = useRef<any[]>();
 	const setInstallEnabled = useCallback((value: boolean) => {
 		window.parent.postMessage({
+			source,
 			command: 'setInstallEnabled',
 			scope,
 			publisher,
@@ -40,6 +43,7 @@ export const AppContextProvider = ({
 	const setConfig = useCallback((value: Config) => {
 		window.parent.postMessage({
 			command: 'setConfig',
+			source,
 			scope,
 			publisher,
 			refType,
@@ -49,6 +53,7 @@ export const AppContextProvider = ({
 	const setRedirectTo = useCallback((url: string) => {
 		window.parent.postMessage({
 			command: 'setRedirectTo',
+			source,
 			scope,
 			publisher,
 			refType,
@@ -60,6 +65,7 @@ export const AppContextProvider = ({
 			redirectPromise.current = [resolve, reject];
 			window.parent.postMessage({
 				command: 'getRedirectURL',
+				source,
 				scope,
 				publisher,
 				refType,
@@ -72,6 +78,7 @@ export const AppContextProvider = ({
 			redirectOAuthPromise.current = [resolve, reject];
 			window.parent.postMessage({
 				command: 'getAppOAuthURL',
+				source,
 				scope,
 				publisher,
 				refType,
@@ -85,6 +92,7 @@ export const AppContextProvider = ({
 			configPromise.current = [resolve, reject];
 			window.parent.postMessage({
 				command: 'getConfig',
+				source,
 				scope,
 				publisher,
 				refType,
@@ -97,7 +105,10 @@ export const AppContextProvider = ({
 		const handler = async (e: any) => {
 			if (e.data) {
 				const { data } = e;
-				const { command } = data;
+				const { source, command } = data;
+				if (source !== 'agent.websdk') {
+					return;
+				}
 				switch (command) {
 					case 'INIT': {
 						const _config = await getConfig();
@@ -111,7 +122,7 @@ export const AppContextProvider = ({
 						setIsFromRedirect(_redirected);
 						setCurrentURL(_url);
 						setInstalled(_installed);
-						setCurrentConfig(_config);
+						currentConfig.current = _config;
 						setAuthorization(_authorization);
 						setProcessingDetail(_processingDetail);
 						setLoading(false);
@@ -128,6 +139,14 @@ export const AppContextProvider = ({
 							}
 							configPromise.current = null;
 						}
+						break;
+					}
+					case 'setConfig': {
+						const { config } = data;
+						if (config && JSON.stringify(config) !== JSON.stringify(currentConfig.current)) {
+							currentConfig.current = config;
+							setRerender(Date.now()); // force a re-render to send down to children
+						}	
 						break;
 					}
 					case 'getRedirectURL': {
@@ -184,7 +203,7 @@ export const AppContextProvider = ({
 				setRedirectTo,
 				currentURL,
 				installed,
-				config: currentConfig,
+				config: {...currentConfig.current},
 				getRedirectURL,
 				getAppOAuthURL,
 				isFromRedirect,
