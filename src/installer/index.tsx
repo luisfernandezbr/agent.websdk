@@ -111,19 +111,19 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'getAppOAuthURL': {
 						const { redirectTo } = data;
-						let domain = '';
-						const href = document.location.href;
-						if (href.indexOf('.edge.pinpoint') > 0) {
-							domain = 'edge.pinpoint.com';
-						} else if (href.indexOf('.ppoint.io') > 0) {
-							domain = 'edge.pinpoint.com';
-						} else {
-							domain = 'pinpoint.com';
-						}
 						let url: string
 						if (oauthURL !== '') {
 							url = oauthURL;
 						} else {
+							let domain = '';
+							const href = document.location.href;
+							if (href.indexOf('.edge.pinpoint') > 0) {
+								domain = 'edge.pinpoint.com';
+							} else if (href.indexOf('.ppoint.io') > 0) {
+								domain = 'edge.pinpoint.com';
+							} else {
+								domain = 'pinpoint.com';
+							}
 							url = `https://auth.api.${domain}/oauth/${refType}`;
 						}
 						if (url.indexOf('?') == -1) {
