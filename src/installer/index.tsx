@@ -45,6 +45,8 @@ const Installer = (props: InstallerProps) => {
 	const currentConfig = useRef<Config>({});
 	const [loaded, setLoaded] = useState(false);
 	const [showDialog, setShowDialog] = useState(false);
+	const [oauthURL, setOAuthURL] = useState('');
+
 	const onLoad = useCallback(() => {
 		if (!loaded) {
 			const redirected = document.location.search.indexOf('integration=redirect') > 0;
@@ -101,6 +103,11 @@ const Installer = (props: InstallerProps) => {
 						}
 						break;
 					}
+					case 'setAppOAuthURL': {
+						const { url } = data;
+						setOAuthURL(url);
+						break;
+					}
 					case 'getRedirectURL': {
 						const redirectURL = document.location.href;
 						const sep = redirectURL.indexOf('?') > 0 ? '&' : '?';
@@ -110,17 +117,28 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'getAppOAuthURL': {
 						const { redirectTo } = data;
-						let domain = '';
-						const href = document.location.href;
-						if (href.indexOf('.edge.pinpoint') > 0) {
-							domain = 'edge.pinpoint.com';
-						} else if (href.indexOf('.ppoint.io') > 0) {
-							domain = 'edge.pinpoint.com';
+						let url: string
+						if (oauthURL !== '') {
+							url = oauthURL;
 						} else {
-							domain = 'pinpoint.com';
+							let domain = '';
+							const href = document.location.href;
+							if (href.indexOf('.edge.pinpoint') > 0) {
+								domain = 'edge.pinpoint.com';
+							} else if (href.indexOf('.ppoint.io') > 0) {
+								domain = 'edge.pinpoint.com';
+							} else {
+								domain = 'pinpoint.com';
+							}
+							url = `https://auth.api.${domain}/oauth/${refType}`;
 						}
-						const url = `https://auth.api.${domain}/oauth/${refType}?redirect_to=${encodeURIComponent(redirectTo)}`;
-						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', source: SOURCE, url }, '*');
+						if (url.indexOf('?') == -1) {
+							url += '?';
+						} else {
+							url += '&';
+						}
+						url += `redirect_to=${encodeURIComponent(redirectTo)}`
+						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', url }, '*');
 						break;
 					}
 					case 'setRedirectTo': {
@@ -136,7 +154,7 @@ const Installer = (props: InstallerProps) => {
 		return () => {
 			window.removeEventListener('message', handler);
 		};
-	}, []);
+	}, [oauthURL]);
 	const dialogCancel = useCallback(() => {
 		setShowDialog(false);
 	}, []);

@@ -88,6 +88,8 @@ export interface IAppContext {
 	setRedirectTo: (url: string) => void;
 	// getAppOAuthURL will return the oauth auth url for using built-in Pinpoint authentication with third-party systems
 	getAppOAuthURL: (redirectTo: string) => Promise<string>;
+	// setAppOAuthURL overrides the default oauth url
+	setAppOAuthURL: (url: string) => void;
 	// onReAuthed should be called after reauthorization to set the isFromReAuth back to false
 	onReAuthed: () => void;
 }
