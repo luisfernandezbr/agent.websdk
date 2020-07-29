@@ -138,7 +138,7 @@ const Installer = (props: InstallerProps) => {
 							url += '&';
 						}
 						url += `redirect_to=${encodeURIComponent(redirectTo)}`
-						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', url }, '*');
+						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', source: SOURCE, url }, '*');
 						break;
 					}
 					case 'setRedirectTo': {
