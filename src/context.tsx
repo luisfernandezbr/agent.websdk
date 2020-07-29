@@ -64,6 +64,7 @@ export const AppContextProvider = ({
 	const setAppOAuthURL = useCallback((url: string) => {
 		window.parent.postMessage({
 			command: 'setAppOAuthURL',
+			source,
 			scope,
 			publisher,
 			refType,
