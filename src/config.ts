@@ -14,6 +14,13 @@ export interface Authorizer {
 
 export interface Auth {
 	url?: Maybe<string>;
+	date_ts?: number;
+}
+
+export interface OAuth1Auth extends Auth {
+	consumer_key: string;
+	oauth_token: string;
+	oauth_token_secret: string;
 }
 
 export interface OAuth2Auth extends Auth {
@@ -43,6 +50,7 @@ export interface Config extends Bag {
 	integration_type?: IntegrationType;
 	exclusions?: Maybe<{[id: string]: string}>;
 	inclusions?: Maybe<{[id: string]: string}>;
+	oauth1_auth?: Maybe<OAuth1Auth>;
 	oauth2_auth?: Maybe<OAuth2Auth>;
 	basic_auth?: Maybe<BasicAuth>;
 	apikey_auth?: Maybe<APIKeyAuth>;

@@ -3,7 +3,7 @@ import { Button, Dialog, Icon, Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
 export { default as Integration } from './types';
-import { IProcessingDetail, IAppAuthorization } from '../types';
+import { IProcessingDetail, IAppAuthorization, OAuthVersion } from '../types';
 import { Config } from '../config';
 import styles from './styles.less';
 
@@ -116,7 +116,7 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'getAppOAuthURL': {
-						const { redirectTo } = data;
+						const { redirectTo, version } = data;
 						let url: string
 						if (oauthURL !== '') {
 							url = oauthURL;
@@ -130,7 +130,8 @@ const Installer = (props: InstallerProps) => {
 							} else {
 								domain = 'pinpoint.com';
 							}
-							url = `https://auth.api.${domain}/oauth/${refType}`;
+							const oauthVersion = version === OAuthVersion.Version1 ? 'oauth1' : 'oauth';
+							url = `https://auth.api.${domain}/${oauthVersion}/${refType}`;
 						}
 						if (url.indexOf('?') == -1) {
 							url += '?';

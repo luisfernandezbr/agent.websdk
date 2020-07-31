@@ -32,6 +32,8 @@ const SimulatorInstaller = ({ integration, processingDetail }: { integration: In
 	var auth = {};
 	if (conf.oauth2_auth) {
 		auth = conf.oauth2_auth
+	} else if (conf.oauth1_auth) {
+		auth = conf.oauth1_auth
 	} else if (conf.basic_auth) {
 		auth = conf.basic_auth
 	} else if (conf.apikey_auth) {

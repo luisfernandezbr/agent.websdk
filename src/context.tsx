@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { IAppContext, IAppAuthorization, IProcessingDetail } from './types';
+import { IAppContext, IAppAuthorization, IProcessingDetail, OAuthVersion } from './types';
 import { Config } from './config';
 
 interface IAppContextProps {
@@ -84,7 +84,7 @@ export const AppContextProvider = ({
 		});
 		return promise;
 	}, []);
-	const getAppOAuthURL = useCallback((redirectTo: string) => {
+	const getAppOAuthURL = useCallback((redirectTo: string, version?: OAuthVersion) => {
 		const promise = new Promise<string>((resolve, reject) => {
 			redirectOAuthPromise.current = [resolve, reject];
 			window.parent.postMessage({
@@ -94,6 +94,7 @@ export const AppContextProvider = ({
 				publisher,
 				refType,
 				redirectTo,
+				version,
 			}, '*');
 		});
 		return promise;

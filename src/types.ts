@@ -21,7 +21,15 @@ export interface IAPIKeyAuth extends IAuth {
 	apikey: string;
 }
 
+export interface IOAuth1Auth extends IAuth {
+	date_ts: number;
+	consumer_key: string;
+	oauth_token: string;
+	oauth_token_secret: string;
+}
+
 export interface IOAuth2Auth extends IAuth {
+	date_ts: number;
 	access_token: string;
 	refresh_token?: Maybe<string>;
 	scopes?: Maybe<string>;
@@ -29,6 +37,7 @@ export interface IOAuth2Auth extends IAuth {
 
 export interface IAppAuthorization {
 	basic_auth?: Maybe<IAppBasicAuth>;
+	oauth1_auth?: Maybe<IOAuth1Auth>;
 	oauth2_auth?: Maybe<IOAuth2Auth>;
 	apikey_auth?: Maybe<IAPIKeyAuth>;
 	authorizer?: Maybe<IAuthorizer>;
@@ -55,6 +64,11 @@ export interface IProcessingDetail {
 	throttledUntilDate?: Maybe<number>;
 	paused: boolean;
 	location: IInstalledLocation;
+}
+
+export enum OAuthVersion {
+	Version1,
+	Version2,
 }
 
 export interface IAppContext {
@@ -87,7 +101,7 @@ export interface IAppContext {
 	// setRedirectTo will cause the application to go to the url
 	setRedirectTo: (url: string) => void;
 	// getAppOAuthURL will return the oauth auth url for using built-in Pinpoint authentication with third-party systems
-	getAppOAuthURL: (redirectTo: string) => Promise<string>;
+	getAppOAuthURL: (redirectTo: string, version?: OAuthVersion) => Promise<string>;
 	// setAppOAuthURL overrides the default oauth url
 	setAppOAuthURL: (url: string) => void;
 	// onReAuthed should be called after reauthorization to set the isFromReAuth back to false

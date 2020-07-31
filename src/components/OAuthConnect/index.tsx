@@ -1,19 +1,21 @@
 import React from 'react';
-import { useIntegration } from '../../useIntegration';
 import { Button, Icon } from '@pinpt/uic.next';
+import { useIntegration } from '../../useIntegration';
+import { OAuthVersion } from '../../types';
 import styles from './styles.less';
 
 interface OAuthConnectProps {
 	name: string,
 	reauth?: boolean
+	version?: OAuthVersion;
 }
 
-export const OAuthConnect = ({ name, reauth }: OAuthConnectProps) => {
+export const OAuthConnect = ({ name, reauth, version }: OAuthConnectProps) => {
 	const { setRedirectTo, getRedirectURL, getAppOAuthURL } = useIntegration();
 
 	const onClick = async () => {
 		const theurl = await getRedirectURL();
-		const redirectTo = await getAppOAuthURL(theurl);
+		const redirectTo = await getAppOAuthURL(theurl, version);
 		setRedirectTo(redirectTo);
 	};
 
