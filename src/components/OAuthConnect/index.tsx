@@ -8,14 +8,17 @@ interface OAuthConnectProps {
 	name: string,
 	reauth?: boolean
 	version?: OAuthVersion;
+	baseuri?: string;
+	preamble?: string | React.ReactElement;
+	action?: string;
 }
 
-export const OAuthConnect = ({ name, reauth, version }: OAuthConnectProps) => {
+export const OAuthConnect = ({ name, reauth, version, baseuri, preamble, action = `Link ${name}` }: OAuthConnectProps) => {
 	const { setRedirectTo, getRedirectURL, getAppOAuthURL } = useIntegration();
 
 	const onClick = async () => {
 		const theurl = await getRedirectURL();
-		const redirectTo = await getAppOAuthURL(theurl, version);
+		const redirectTo = await getAppOAuthURL(theurl, version, baseuri);
 		setRedirectTo(redirectTo);
 	};
 
@@ -40,6 +43,14 @@ export const OAuthConnect = ({ name, reauth, version }: OAuthConnectProps) => {
 					)
 				}
 
+				{
+					preamble && (
+						<p>
+							{preamble}
+						</p>
+					)
+				}
+
 				<p>
 					Use the button below to redirect to {name} to grant permission for Pinpoint to access your {name} data.
 					Once authorized, you will automatically be returned to this screen to&nbsp;
@@ -51,7 +62,7 @@ export const OAuthConnect = ({ name, reauth, version }: OAuthConnectProps) => {
 				<Button color="Green" weight={500} onClick={onClick}>
 					<>
 						<Icon icon={['fas', 'sign-in-alt']} />
-						Link {name}
+						{action}
 					</>
 				</Button>
 			</div>

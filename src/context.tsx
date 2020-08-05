@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { IAppContext, IAppAuthorization, IProcessingDetail, OAuthVersion } from './types';
+import { IAppContext, IAppAuthorization, IProcessingDetail, OAuthVersion, FetchHeaders, FetchMethod, IFetchResult, ISelfManagedAgent, ISession } from './types';
 import { Config } from './config';
+
+type Maybe<T> = T | undefined | null;
 
 interface IAppContextProps {
 	children: React.ReactNode;
@@ -27,9 +29,15 @@ export const AppContextProvider = ({
 	const currentConfig = useRef<Config>({});
 	const [authorization, setAuthorization] = useState<IAppAuthorization>();
 	const [processingDetail, setProcessingDetail] = useState<IProcessingDetail>();
+	const [selfManagedAgent, setSelfManagedAgent] = useState<ISelfManagedAgent>();
+	const [session, setSession] = useState<ISession>();
 	const redirectPromise = useRef<any[]>();
 	const redirectOAuthPromise = useRef<any[]>();
 	const configPromise = useRef<any[]>();
+	const oauth1ConnectCallback = useRef<any>();
+	const validateCallback = useRef<any>();
+	const fetchPromise = useRef<any[]>();
+	const selfManagedAgentPromise = useRef<any[]>();
 
 	const setInstallEnabled = useCallback((value: boolean) => {
 		window.parent.postMessage({
@@ -84,7 +92,7 @@ export const AppContextProvider = ({
 		});
 		return promise;
 	}, []);
-	const getAppOAuthURL = useCallback((redirectTo: string, version?: OAuthVersion) => {
+	const getAppOAuthURL = useCallback((redirectTo: string, version?: Maybe<OAuthVersion>, baseuri?: Maybe<string>) => {
 		const promise = new Promise<string>((resolve, reject) => {
 			redirectOAuthPromise.current = [resolve, reject];
 			window.parent.postMessage({
@@ -95,6 +103,7 @@ export const AppContextProvider = ({
 				refType,
 				redirectTo,
 				version,
+				baseuri,
 			}, '*');
 		});
 		return promise;
@@ -130,7 +139,9 @@ export const AppContextProvider = ({
 							redirected: _redirected,
 							installed: _installed,
 							authorization: _authorization,
-							processingDetail: _processingDetail
+							processingDetail: _processingDetail,
+							selfManagedAgent: _selfManagedAgent,
+							session: _session,
 						} = data;
 						setIsFromRedirect(_redirected);
 						setCurrentURL(_url);
@@ -138,6 +149,8 @@ export const AppContextProvider = ({
 						currentConfig.current = _config;
 						setAuthorization(_authorization);
 						setProcessingDetail(_processingDetail);
+						setSelfManagedAgent(_selfManagedAgent);
+						setSession(_session);
 						setLoading(false);
 						break;
 					}
@@ -188,8 +201,51 @@ export const AppContextProvider = ({
 						}
 						break;
 					}
+					case 'setOAuth1Connect': {
+						if (oauth1ConnectCallback.current) {
+							const callback = oauth1ConnectCallback.current;
+							oauth1ConnectCallback.current = null;
+							const { err } = data;
+							callback(err);
+						}
+						break;
+					}
+					case 'setValidate': {
+						if (validateCallback.current) {
+							const callback = validateCallback.current;
+							const { err, result } = data;
+							validateCallback.current = null;
+							callback(err, result);
+						}
+						break;
+					}
 					case 'handleAuthChange': {
 						setIsFromReAuth(true);
+						break;
+					}
+					case 'fetch': {
+						if (fetchPromise.current) {
+							const [resolve, reject] = fetchPromise.current;
+							const { err, statusCode, body, headers } = data;
+							fetchPromise.current = null;
+							if (err) {
+								reject(err as Error);
+							} else {
+								resolve({
+									statusCode,
+									body,
+									headers
+								});
+							}
+						}
+						break;
+					}
+					case 'setSelfManagedAgentRequired': {
+						if (selfManagedAgentPromise.current) {
+							const [resolve] = selfManagedAgentPromise.current;
+							selfManagedAgentPromise.current = null;
+							resolve();
+						}
 						break;
 					}
 					default: break;
@@ -206,6 +262,71 @@ export const AppContextProvider = ({
 			}, '*');
 			window.removeEventListener('message', handler);
 		};
+	}, []);
+
+	const setOAuth1Connect = useCallback((url: string, callback?: (err: Maybe<Error>) => void) => {
+		if (!url || !callback) {
+			// allow unset
+			oauth1ConnectCallback.current = undefined;
+			return;
+		}
+		oauth1ConnectCallback.current = callback;
+		window.parent.postMessage({
+			command: 'setOAuth1Connect',
+			source,
+			scope,
+			publisher,
+			refType,
+			url,
+		}, '*');
+	}, []);
+
+	const setValidate = useCallback((config: Config, callback?: (err: Maybe<Error>, res: Maybe<any>) => void) => {
+		if (!config || !callback) {
+			// allow unset
+			validateCallback.current = null;
+			return;
+		}
+		validateCallback.current = callback;
+		window.parent.postMessage({
+			command: 'setValidate',
+			source,
+			scope,
+			publisher,
+			refType,
+			config,
+		}, '*');
+	}, []);
+
+	const fetch = useCallback((url: string, headers?: FetchHeaders, method?: FetchMethod) => {
+		const promise = new Promise<IFetchResult>((resolve, reject) => {
+			fetchPromise.current = [resolve, reject];
+			window.parent.postMessage({
+				command: 'fetch',
+				source,
+				scope,
+				publisher,
+				refType,
+				url,
+				headers,
+				method,
+			}, '*');
+		});
+		return promise;
+	}, []);
+
+	const setSelfManagedAgentRequired = useCallback(() => {
+		const promise = new Promise<void>((resolve, reject) => {
+			selfManagedAgentPromise.current = [resolve, reject];
+			window.parent.postMessage({
+				command: 'setSelfManagedAgentRequired',
+				source,
+				scope,
+				publisher,
+				refType,
+			}, '*');
+		});
+		return promise;
 	}, []);
 
 	return (
@@ -227,6 +348,12 @@ export const AppContextProvider = ({
 				setLoading,
 				processingDetail,
 				onReAuthed,
+				session,
+				setOAuth1Connect,
+				setValidate,
+				fetch,
+				setSelfManagedAgentRequired,
+				selfManagedAgent,
 			}}
 		>
 			{children}
