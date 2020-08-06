@@ -13,6 +13,7 @@ type Maybe<T> = T | undefined | null;
 const SOURCE = 'agent.websdk';
 
 export interface InstallerProps {
+	id: string;
 	className?: Maybe<string>;
 	integration: Integration;
 	processingDetail?: Maybe<IProcessingDetail>;
@@ -95,6 +96,7 @@ const Installer = (props: InstallerProps) => {
 			ref.current.contentWindow.postMessage({
 				command: 'INIT',
 				source: SOURCE,
+				id: props.id,
 				url,
 				installed: isInstalled,
 				redirected,

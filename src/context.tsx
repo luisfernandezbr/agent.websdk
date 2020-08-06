@@ -26,6 +26,7 @@ export const AppContextProvider = ({
 	const [currentURL, setCurrentURL] = useState<string>('');
 	const [installed, setInstalled] = useState<boolean>(false);
 	const [, setRerender] = useState(0);
+	const [id, setID] = useState();
 	const currentConfig = useRef<Config>({});
 	const [authorization, setAuthorization] = useState<IAppAuthorization>();
 	const [processingDetail, setProcessingDetail] = useState<IProcessingDetail>();
@@ -138,6 +139,7 @@ export const AppContextProvider = ({
 					case 'INIT': {
 						const _config = await getConfig();
 						const {
+							id: _id,
 							url: _url,
 							redirected: _redirected,
 							installed: _installed,
@@ -146,6 +148,7 @@ export const AppContextProvider = ({
 							selfManagedAgent: _selfManagedAgent,
 							session: _session,
 						} = data;
+						setID(_id);
 						setIsFromRedirect(_redirected);
 						setCurrentURL(_url);
 						setInstalled(_installed);
@@ -416,6 +419,7 @@ export const AppContextProvider = ({
 	return (
 		<AppContext.Provider
 			value={{
+				id,
 				setInstallEnabled,
 				setConfig,
 				setRedirectTo,

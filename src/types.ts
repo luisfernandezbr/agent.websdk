@@ -102,6 +102,8 @@ export interface ISelfManagedAgent {
 }
 
 export interface IAppContext {
+	// the id for the integration instance
+	id: string;
 	// loading will return true if the context is loading the integration
 	loading: boolean;
 	// setLoading will set the value of loading

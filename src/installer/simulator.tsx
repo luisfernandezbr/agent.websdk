@@ -107,6 +107,7 @@ const SimulatorInstaller = ({
 	}
 	return (
 		<Installer
+			id="1234567790"
 			className={styles.Simulator}
 			integration={integration}
 			processingDetail={processingDetail}
