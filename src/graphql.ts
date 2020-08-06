@@ -1,5 +1,5 @@
 export default class Graphql {
-	static query(url: string, query: string, variables: {[key: string]: any} = {}, headers: {[key: string]: string} = {}): Promise<[any, number, {[key: string]: string}]> {
+	static query(url: string, query: string, variables: {[key: string]: any} = {}, headers: {[key: string]: string} = {}, withCredentials = true): Promise<[any, number, {[key: string]: string}]> {
 		return new Promise((resolve, reject) => {
 			try {
 				const xhr = new XMLHttpRequest();
@@ -7,6 +7,7 @@ export default class Graphql {
 				xhr.setRequestHeader('Content-Type', 'application/json');
 				Object.keys(headers).forEach((key: string) => xhr.setRequestHeader(key, headers[key]));
 				xhr.responseType = 'json';
+				xhr.withCredentials = withCredentials;
 				xhr.onerror = (e) => reject(e);
 				xhr.onload = () => {
 					const headers = xhr.getAllResponseHeaders();
