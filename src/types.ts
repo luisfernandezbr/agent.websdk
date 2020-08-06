@@ -9,6 +9,7 @@ interface IAuthorizer {
 }
 
 export interface IAuth {
+	date_ts: number;
 	url?: Maybe<string>;
 }
 
@@ -21,6 +22,12 @@ export interface IAPIKeyAuth extends IAuth {
 	apikey: string;
 }
 
+export interface IOAuth1Auth extends IAuth {
+	consumer_key: string;
+	oauth_token: string;
+	oauth_token_secret: string;
+}
+
 export interface IOAuth2Auth extends IAuth {
 	access_token: string;
 	refresh_token?: Maybe<string>;
@@ -29,6 +36,7 @@ export interface IOAuth2Auth extends IAuth {
 
 export interface IAppAuthorization {
 	basic_auth?: Maybe<IAppBasicAuth>;
+	oauth1_auth?: Maybe<IOAuth1Auth>;
 	oauth2_auth?: Maybe<IOAuth2Auth>;
 	apikey_auth?: Maybe<IAPIKeyAuth>;
 	authorizer?: Maybe<IAuthorizer>;
@@ -40,7 +48,7 @@ export enum IProcessingState {
 };
 
 export enum IInstalledLocation {
-	SELFMANAGED = 'PRIVATE',
+	SELFMANAGED = 'SELFMANAGED',
 	CLOUD = 'CLOUD',
 };
 
@@ -55,6 +63,42 @@ export interface IProcessingDetail {
 	throttledUntilDate?: Maybe<number>;
 	paused: boolean;
 	location: IInstalledLocation;
+}
+
+export enum OAuthVersion {
+	Version1,
+	Version2,
+}
+
+export interface ISession {
+	customer: {
+		id: string;
+		name: string;
+	}
+	user: {
+		id: string;
+		name: string;
+		avatar_url: string;
+	}
+	env: 'stable' | 'edge' | 'dev';
+}
+
+export type FetchHeaders = {[key: string]: string};
+
+export interface IFetchResult {
+	statusCode: number;
+	headers: FetchHeaders;
+	body?: string;
+}
+
+export enum FetchMethod {
+	GET = "GET",
+	HEAD = "HEAD",
+}
+
+export interface ISelfManagedAgent {
+	enrollment_id: string;
+	running: boolean;
 }
 
 export interface IAppContext {
@@ -87,9 +131,27 @@ export interface IAppContext {
 	// setRedirectTo will cause the application to go to the url
 	setRedirectTo: (url: string) => void;
 	// getAppOAuthURL will return the oauth auth url for using built-in Pinpoint authentication with third-party systems
-	getAppOAuthURL: (redirectTo: string) => Promise<string>;
+	getAppOAuthURL: (redirectTo: string, version?: Maybe<OAuthVersion>, baseuri?: Maybe<string>) => Promise<string>;
 	// setAppOAuthURL overrides the default oauth url
 	setAppOAuthURL: (url: string) => void;
 	// onReAuthed should be called after reauthorization to set the isFromReAuth back to false
 	onReAuthed: () => void;
+	// session is the details about the current login session
+	session: ISession;
+	// setOAuth1Connect is called if the integration wants to invoke callback when an oauth1 auth connect event is received by refType and for url
+	setOAuth1Connect: (url: string, callback?: (err: Maybe<Error>) => void) => void;
+	// setValidate will send the config for validation by the integration and then invoke callback with the result when received by the integration
+	setValidate: (config: Config, callback?: (err: Maybe<Error>, res: Maybe<any>) => void) => void;
+	// fetch will allow the integration to fetch (outside of the browser) a url to validate data or to validate reachability of the url
+	fetch: (url: string, headers?: FetchHeaders, method?: FetchMethod) => Promise<IFetchResult>;
+	//	setSelfManagedAgentRequired will navigate to the self managed agent setup screen
+	setSelfManagedAgentRequired: () => void;
+	// selfManagedAgent returns the self managed agent instance details if setup
+	selfManagedAgent?: Maybe<ISelfManagedAgent>;
+	// setPrivateKey will the a private key on the integration instance
+	setPrivateKey: (key: string) => Promise<void>;
+	// createPrivateKey will return an RSA private key in PEM, PKCS#8 format
+	createPrivateKey: () => Promise<string>;
+	// setInstallLocation will set the installed location for the installation
+	setInstallLocation: (location: IInstalledLocation) => Promise<void>;
 }

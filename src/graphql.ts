@@ -17,7 +17,11 @@ export default class Graphql {
       				const header = parts.shift();
       				const value = parts.join(': ');
       				headerMap[header] = value;
-					 });
+					});
+					if (xhr.response.errors?.length) {
+						reject(new Error(`${xhr.response.errors[0].message}`));
+						return;
+					}
 					if (xhr.status === 200 && xhr.response.data) {
 						resolve([xhr.response.data, xhr.status, headerMap]);
 					} else {

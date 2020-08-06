@@ -65,7 +65,7 @@ const buildAccountRow = (entity: string, account: Account, config: Config, onCli
 		key: account.id,
 		className: accountError ? styles.Error : null,
 		left: (
-			<div className={styles.Account}>
+			<div className={[styles.Account, account.avatarUrl ? '' : styles.NoImage].join(' ')}>
 				{
 					!accountError ? (
 						<AccountSelector account={account} config={config} />

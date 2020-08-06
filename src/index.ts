@@ -10,7 +10,8 @@ export {
 	OAuthConnect,
 	Form,
 	FormType,
-	NoAction
+	NoAction,
+	URLValidator
 } from './components';
 export {
 	APIKeyAuth,
