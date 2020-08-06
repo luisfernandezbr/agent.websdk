@@ -9,6 +9,7 @@ interface IAuthorizer {
 }
 
 export interface IAuth {
+	date_ts: number;
 	url?: Maybe<string>;
 }
 
@@ -22,14 +23,12 @@ export interface IAPIKeyAuth extends IAuth {
 }
 
 export interface IOAuth1Auth extends IAuth {
-	date_ts: number;
 	consumer_key: string;
 	oauth_token: string;
 	oauth_token_secret: string;
 }
 
 export interface IOAuth2Auth extends IAuth {
-	date_ts: number;
 	access_token: string;
 	refresh_token?: Maybe<string>;
 	scopes?: Maybe<string>;
@@ -149,4 +148,10 @@ export interface IAppContext {
 	setSelfManagedAgentRequired: () => void;
 	// selfManagedAgent returns the self managed agent instance details if setup
 	selfManagedAgent?: Maybe<ISelfManagedAgent>;
+	// setPrivateKey will the a private key on the integration instance
+	setPrivateKey: (key: string) => Promise<void>;
+	// createPrivateKey will return an RSA private key in PEM, PKCS#8 format
+	createPrivateKey: () => Promise<string>;
+	// setInstallLocation will set the installed location for the installation
+	setInstallLocation: (location: IInstalledLocation) => Promise<void>;
 }

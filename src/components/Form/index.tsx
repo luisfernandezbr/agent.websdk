@@ -161,13 +161,13 @@ export const Form = ({
 				const newurl = urlFormatter(url);
 				switch (type) {
 					case FormType.BASIC: {
-						const auth = { username, password, url: newurl } as IAppBasicAuth
+						const auth = { date_ts: Date.now(), username, password, url: newurl } as IAppBasicAuth
 						await callback(auth);
 						config.basic_auth = auth;
 						break;
 					}
 					case FormType.API: {
-						const auth = { apikey, url: newurl } as IAPIKeyAuth;
+						const auth = { date_ts: Date.now(), apikey, url: newurl } as IAPIKeyAuth;
 						await callback(auth);
 						config.apikey_auth = auth;
 						break;

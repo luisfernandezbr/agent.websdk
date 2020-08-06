@@ -14,7 +14,7 @@ export interface Authorizer {
 
 export interface Auth {
 	url?: Maybe<string>;
-	date_ts?: number;
+	date_ts: number;
 }
 
 export interface OAuth1Auth extends Auth {

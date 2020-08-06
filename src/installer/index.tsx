@@ -4,7 +4,7 @@ import { Header } from './components';
 import Integration from './types';
 import Graphql from '../graphql';
 export { default as Integration } from './types';
-import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, ISession } from '../types';
+import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, ISession, IInstalledLocation } from '../types';
 import { Config } from '../config';
 import styles from './styles.less';
 
@@ -27,6 +27,8 @@ export interface InstallerProps {
 	onValidate: (integration: Integration, config: Config) => Promise<any>;
 	setSelfManagedAgentRequired: () => void;
 	selfManagedAgent?: Maybe<ISelfManagedAgent>;
+	setPrivateKey: (integration: Integration, key: string) => Promise<void>;
+	setInstallLocation: (integration: Integration, location: IInstalledLocation) => Promise<void>;
 }
 
 const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any) => {
@@ -55,6 +57,14 @@ const fetchQuery = `query fetch($url: String!, $method: String, $headers: [Agent
 					value
 				}
 			}
+		}
+	}
+}`;
+
+const privateKeyQuery = `query privatekey {
+	custom {
+		agent {
+			privateKey
 		}
 	}
 }`;
@@ -185,6 +195,41 @@ const Installer = (props: InstallerProps) => {
 					case 'setSelfManagedAgentRequired': {
 						props.setSelfManagedAgentRequired();
 						ref.current.contentWindow.postMessage({ command: 'setSelfManagedAgentRequired', source: SOURCE }, '*');
+						break;
+					}
+					case 'createPrivateKey': {
+						const domain = getDomain(props.session?.env);
+						const graphHeaders: any = {};
+						if ((window as any).PinpointGraph?.Authorization) {
+							graphHeaders.Authorization = (window as any).PinpointGraph?.Authorization;
+						}
+						try {
+							const [data] = await Graphql.query(`https://graph.api.${domain}`, privateKeyQuery, undefined, graphHeaders);
+							const privateKey = data?.agent.custom.privateKey;
+							ref.current.contentWindow.postMessage({
+								command: 'createPrivateKey',
+								source: SOURCE,
+								result: privateKey,
+							}, '*');
+						} catch (err) {
+							ref.current.contentWindow.postMessage({
+								command: 'createPrivateKey',
+								source: SOURCE,
+								err,
+							}, '*');
+						}
+						break;
+					}
+					case 'setPrivateKey': {
+						const { value } = data;
+						await props.setPrivateKey(props.integration, value);
+						ref.current.contentWindow.postMessage({ command: 'setPrivateKey', source: SOURCE }, '*');
+						break;
+					}
+					case 'setInstallLocation': {
+						const { value } = data;
+						await props.setInstallLocation(props.integration, value);
+						ref.current.contentWindow.postMessage({ command: 'setInstallLocation', source: SOURCE }, '*');
 						break;
 					}
 					case 'fetch': {

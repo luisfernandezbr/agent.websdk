@@ -13,7 +13,7 @@ const sleep = (t: number) => {
 	});
 };
 
-const setInstallEnabled = async (integration: Integration) => {
+const setInstallEnabled = async () => {
 };
 
 const getConfig = async (integration: Integration) => {
@@ -47,6 +47,12 @@ const onValidateDefault = async (integration: Integration, config: Config) => {
 
 const setSelfManagedAgentRequired = () => {
 	alert('In the app we would navigate to the self-managed agent install page');
+};
+
+const setPrivateKey = async () => {
+};
+
+const setInstallLocation = async () => {
 };
 
 const getEnv = () => {
@@ -115,6 +121,8 @@ const SimulatorInstaller = ({
 			setSelfManagedAgentRequired={setSelfManagedAgentRequired}
 			selfManagedAgent={selfManagedAgent}
 			session={session}
+			setPrivateKey={setPrivateKey}
+			setInstallLocation={setInstallLocation}
 		/>
 	);
 };
