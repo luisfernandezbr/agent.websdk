@@ -85,6 +85,8 @@ const SimulatorInstaller = ({
 			avatar_url: (window as any).PinpointAuth?.user?.avatar_url,
 		},
 		env: getEnv(),
+		graphqlUrl: 'https://graph.api.pinpoint.com/graphql',
+		authUrl: 'https://auth.api.pinpoint.com'
 	}
 }: {
 	integration: Integration,

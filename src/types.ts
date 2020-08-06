@@ -81,6 +81,8 @@ export interface ISession {
 		avatar_url: string;
 	}
 	env: 'stable' | 'edge' | 'dev';
+	graphqlUrl: string;
+	authUrl: string;
 }
 
 export type FetchHeaders = {[key: string]: string};

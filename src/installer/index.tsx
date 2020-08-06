@@ -158,9 +158,8 @@ const Installer = (props: InstallerProps) => {
 						if (oauthURL !== '') {
 							url = oauthURL;
 						} else {
-							const domain = getDomain(props.session?.env);
 							const oauthVersion = version === OAuthVersion.Version1 ? 'oauth1' : 'oauth';
-							url = `https://auth.api.${domain}/${oauthVersion}/${refType}`;
+							url = `${props.session.authUrl}/${oauthVersion}/${refType}`;
 							if (version === OAuthVersion.Version1) {
 								const customer_id = props.session?.customer?.id;
 								url += `/${customer_id}/${encodeURIComponent(baseuri)}`;
@@ -200,13 +199,9 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'createPrivateKey': {
-						const domain = getDomain(props.session?.env);
-						const graphHeaders: any = {};
-						if ((window as any).PinpointGraph?.Authorization) {
-							graphHeaders.Authorization = (window as any).PinpointGraph?.Authorization;
-						}
 						try {
-							const [data] = await Graphql.query(`https://graph.api.${domain}`, privateKeyQuery, undefined, graphHeaders);
+							// we should probably pass this in since it can be overriden by environment
+							const [data] = await Graphql.query(props.session.graphqlUrl, privateKeyQuery);
 							const privateKey = data?.agent.custom.privateKey;
 							ref.current.contentWindow.postMessage({
 								command: 'createPrivateKey',
@@ -256,10 +251,7 @@ const Installer = (props: InstallerProps) => {
 						};
 						try {
 							const graphHeaders: any = {};
-							if ((window as any).PinpointGraph?.Authorization) {
-								graphHeaders.Authorization = (window as any).PinpointGraph?.Authorization;
-							}
-							const [data, statusCode] = await Graphql.query(`https://graph.api.${domain}`, fetchQuery, vars, graphHeaders);
+							const [data, statusCode] = await Graphql.query(props.session.graphqlUrl, fetchQuery, vars, graphHeaders);
 							const o = data?.custom?.agent?.fetch;
 							ref.current.contentWindow.postMessage({
 								command: 'fetch',
