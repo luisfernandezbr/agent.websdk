@@ -202,7 +202,7 @@ const Installer = (props: InstallerProps) => {
 						try {
 							// we should probably pass this in since it can be overriden by environment
 							const [data] = await Graphql.query(props.session.graphqlUrl, privateKeyQuery);
-							const privateKey = data?.agent.custom.privateKey;
+							const privateKey = data?.custom.agent.privateKey;
 							ref.current.contentWindow.postMessage({
 								command: 'createPrivateKey',
 								source: SOURCE,
