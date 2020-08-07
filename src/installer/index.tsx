@@ -165,8 +165,7 @@ const Installer = (props: InstallerProps) => {
 							const oauthVersion = version === OAuthVersion.Version1 ? 'oauth1' : 'oauth';
 							url = `${props.session.authUrl}/${oauthVersion}/${refType}`;
 							if (version === OAuthVersion.Version1) {
-								const customer_id = props.session?.customer?.id;
-								url += `/${customer_id}/${encodeURIComponent(baseuri)}`;
+								url += `/${props.id}/${encodeURIComponent(baseuri)}`;
 							}
 						}
 						const sep = url.indexOf('?') > 0 ? '&' : '?';
