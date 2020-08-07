@@ -94,7 +94,6 @@ export const Header = (props: HeaderProps) => {
 							onClick={props.handleInstall}
 							color="Red"
 							weight={500}
-							disabled={!props.enabled}
 							className={styles.Button}
 						>
 							<>

@@ -158,6 +158,13 @@ export const AppContextProvider = ({
 						setSelfManagedAgent(_selfManagedAgent);
 						setSession(_session);
 						setLoading(false);
+						window.parent.postMessage({
+							command: 'init',
+							source,
+							scope,
+							publisher,
+							refType,
+						}, '*');
 						break;
 					}
 					case 'getConfig': {
@@ -300,6 +307,7 @@ export const AppContextProvider = ({
 			window.parent.postMessage({
 				command: 'EXIT',
 				scope,
+				source,
 				publisher,
 				refType,
 			}, '*');

@@ -77,12 +77,13 @@ const Installer = (props: InstallerProps) => {
 	const [isInstalled, setIsInstalled] = useState(props.integration.installed);
 	const [installEnabled, setInstallEnabled] = useState(false);
 	const currentConfig = useRef<Config>({});
-	const [loaded, setLoaded] = useState(false);
 	const [showDialog, setShowDialog] = useState(false);
 	const [oauthURL, setOAuthURL] = useState('');
+	const loaded = useRef(false);
+	const [ready, setReady] = useState(false);
 
 	const onLoad = useCallback(() => {
-		if (!loaded) {
+		if (!loaded.current) {
 			const redirected = document.location.search.indexOf('integration=redirect') > 0;
 			const url = document.location.href;
 			if (redirected) {
@@ -104,18 +105,20 @@ const Installer = (props: InstallerProps) => {
 				selfManagedAgent: props.selfManagedAgent,
 				session: props.session,
 			}, '*');
-			setTimeout(() => {
-				if (ref.current) ref.current.style.display = '';
-				setLoaded(true);
-			}, 100);
+			loaded.current = true;
 		}
-	}, [ref, isInstalled, loaded]);
+	}, [ref, isInstalled, loaded.current]);
 	useEffect(() => {
 		const handler = async (e: any) => {
 			const { data } = e;
 			const { scope, command, refType, source } = data;
 			if (scope === 'INTEGRATION' && source === SOURCE ) {
 				switch (command) {
+					case 'init': {
+						if (ref.current) ref.current.style.display = '';
+						setReady(true);
+						break;
+					}
 					case 'setInstallEnabled': {
 						const { value } = data;
 						await props.setInstallEnabled(props.integration, value);
@@ -341,7 +344,7 @@ const Installer = (props: InstallerProps) => {
 				handleInstall={handleInstall}
 				handleChangeAuth={handleAuthChange}
 			/>
-			{!loaded && <Loader screen />}
+			{!ready && <Loader screen />}
 			<Frame
 				ref={ref}
 				name={props.integration.name}
