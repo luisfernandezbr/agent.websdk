@@ -180,20 +180,21 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'setOAuth1Connect': {
 						const { url } = data;
-						props.onAuth1Connect(props.integration, url).then(() => {
-							ref.current.contentWindow.postMessage({ command: 'setOAuth1Connect', source: SOURCE }, '*');
-						}).catch((err: Error) => {
+						try {
+							await props.onAuth1Connect(props.integration, url);
+						} catch (err) {
 							ref.current.contentWindow.postMessage({ command: 'setOAuth1Connect', source: SOURCE, err }, '*');
-						});
+						}
 						break;
 					}
 					case 'setValidate': {
 						const { config } = data;
-						props.onValidate(props.integration, config).then((result: any) => {
+						try {
+							const result = await props.onValidate(props.integration, config);
 							ref.current.contentWindow.postMessage({ command: 'setValidate', source: SOURCE, result }, '*');
-						}).catch((err: Error) => {
+						} catch (err) {
 							ref.current.contentWindow.postMessage({ command: 'setValidate', source: SOURCE, err }, '*');
-						});
+						}
 						break;
 					}
 					case 'setSelfManagedAgentRequired': {
@@ -239,7 +240,6 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'fetch': {
 						const { url, method, headers } = data;
-						const domain = getDomain(props.session?.env);
 						const h: any[] = [];
 						if (headers) {
 							Object.keys(headers).forEach((key: any) => {
