@@ -36,7 +36,7 @@ export const AppContextProvider = ({
 	const redirectOAuthPromise = useRef<any[]>();
 	const configPromise = useRef<any[]>();
 	const oauth1ConnectCallback = useRef<any>();
-	const validateCallback = useRef<any>();
+	const validatePromise = useRef<any[]>();
 	const fetchPromise = useRef<any[]>();
 	const selfManagedAgentPromise = useRef<any[]>();
 	const createPrivateKeyPromise = useRef<any[]>();
@@ -225,11 +225,15 @@ export const AppContextProvider = ({
 						break;
 					}
 					case 'setValidate': {
-						if (validateCallback.current) {
-							const callback = validateCallback.current;
+						if (validatePromise.current) {
+							const [resolve, reject] = validatePromise.current;
 							const { err, result } = data;
-							validateCallback.current = null;
-							callback(err, result);
+							validatePromise.current = null;
+							if (err) {
+								reject(err);
+							} else {
+								resolve(result);
+							}
 						}
 						break;
 					}
@@ -346,21 +350,24 @@ export const AppContextProvider = ({
 		}, '*');
 	}, []);
 
-	const setValidate = useCallback((config: Config, callback?: (err: Maybe<Error>, res: Maybe<any>) => void) => {
-		if (!config || !callback) {
+	const setValidate = useCallback((config: Config) => {
+		if (!config) {
 			// allow unset
-			validateCallback.current = null;
+			validatePromise.current = null;
 			return;
 		}
-		validateCallback.current = callback;
-		window.parent.postMessage({
-			command: 'setValidate',
-			source,
-			scope,
-			publisher,
-			refType,
-			config,
-		}, '*');
+		const promise = new Promise<any>((resolve, reject) => {
+			validatePromise.current = [resolve, reject];
+			window.parent.postMessage({
+				command: 'setValidate',
+				source,
+				scope,
+				publisher,
+				refType,
+				config,
+			}, '*');
+		});
+		return promise;
 	}, []);
 
 	const fetch = useCallback((url: string, headers?: FetchHeaders, method?: FetchMethod) => {

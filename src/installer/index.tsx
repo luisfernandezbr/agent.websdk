@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useMemo, useState } from 'react';
 import { Button, Dialog, Icon, Loader } from '@pinpt/uic.next';
 import { Header } from './components';
 import Integration from './types';
@@ -73,9 +73,7 @@ const privateKeyQuery = `query privatekey {
 	}
 }`;
 
-const getDomain = (env: string) => env === 'edge' ? 'edge.pinpoint.com' : 'pinpoint.com';
-
-const Installer = (props: InstallerProps) => {
+const Installer = React.memo((props: InstallerProps) => {
 	const ref = useRef<any>();
 	const [isInstalled, setIsInstalled] = useState(props.integration.installed);
 	const [installEnabled, setInstallEnabled] = useState(false);
@@ -130,12 +128,16 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'getConfig': {
-						let config = await props.getConfig(props.integration);
-						if (!config) {
-							config = {};
+						if (ref.current) {
+							let config = await props.getConfig(props.integration);
+							if (!config) {
+								config = {};
+							}
+							currentConfig.current = config;
+							ref.current.contentWindow.postMessage({ command: 'getConfig', source: SOURCE, config }, '*');
+						} else {
+							if (debug) console.log('Installer:: getConfig ignored because iframe is being unloaded');
 						}
-						currentConfig.current = config;
-						ref.current.contentWindow.postMessage({ command: 'getConfig', source: SOURCE, config }, '*');
 						break;
 					}
 					case 'setConfig': {
@@ -143,7 +145,11 @@ const Installer = (props: InstallerProps) => {
 						props.setConfig(props.integration, value);
 						if (JSON.stringify(currentConfig.current) !== JSON.stringify(value)) {
 							currentConfig.current = value;
-							ref.current.contentWindow.postMessage({ command: 'setConfig', source: SOURCE, config: value }, '*');
+							if (ref.current) {
+								ref.current.contentWindow.postMessage({ command: 'setConfig', source: SOURCE, config: value }, '*');
+							} else {
+								if (debug) console.log('Installer:: setConfig ignored because iframe is being unloaded');
+							}
 						}
 						break;
 					}
@@ -153,27 +159,35 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'getRedirectURL': {
-						const redirectURL = document.location.href;
-						const sep = redirectURL.indexOf('?') > 0 ? '&' : '?';
-						const url = redirectURL + (redirectURL.indexOf('integration=') < 0 ? sep + 'integration=redirect' : '');
-						ref.current.contentWindow.postMessage({ command: 'getRedirectURL', source: SOURCE, url }, '*');
+						if (ref.current) {
+							const redirectURL = document.location.href;
+							const sep = redirectURL.indexOf('?') > 0 ? '&' : '?';
+							const url = redirectURL + (redirectURL.indexOf('integration=') < 0 ? sep + 'integration=redirect' : '');
+							ref.current.contentWindow.postMessage({ command: 'getRedirectURL', source: SOURCE, url }, '*');
+						} else {
+							if (debug) console.log('Installer:: getRedirectURL ignored because iframe is being unloaded');
+						}
 						break;
 					}
 					case 'getAppOAuthURL': {
-						const { redirectTo, version, baseuri } = data;
-						let url: string
-						if (oauthURL !== '') {
-							url = oauthURL;
-						} else {
-							const oauthVersion = version === OAuthVersion.Version1 ? 'oauth1' : 'oauth';
-							url = `${props.session.authUrl}/${oauthVersion}/${refType}`;
-							if (version === OAuthVersion.Version1) {
-								url += `/${props.id}/${encodeURIComponent(baseuri)}`;
+						if (ref.current) {
+							const { redirectTo, version, baseuri } = data;
+							let url: string
+							if (oauthURL !== '') {
+								url = oauthURL;
+							} else {
+								const oauthVersion = version === OAuthVersion.Version1 ? 'oauth1' : 'oauth';
+								url = `${props.session.authUrl}/${oauthVersion}/${refType}`;
+								if (version === OAuthVersion.Version1) {
+									url += `/${props.id}/${encodeURIComponent(baseuri)}`;
+								}
 							}
+							const sep = url.indexOf('?') > 0 ? '&' : '?';
+							url += `${sep}redirect_to=${encodeURIComponent(redirectTo)}`
+							ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', source: SOURCE, url }, '*');
+						} else {
+							if (debug) console.log('Installer:: getAppOAuthURL ignored because iframe is being unloaded');
 						}
-						const sep = url.indexOf('?') > 0 ? '&' : '?';
-						url += `${sep}redirect_to=${encodeURIComponent(redirectTo)}`
-						ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', source: SOURCE, url }, '*');
 						break;
 					}
 					case 'setRedirectTo': {
@@ -182,27 +196,42 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'setOAuth1Connect': {
-						const { url } = data;
-						try {
-							await props.onAuth1Connect(props.integration, url);
-						} catch (err) {
-							ref.current.contentWindow.postMessage({ command: 'setOAuth1Connect', source: SOURCE, err }, '*');
+						if (ref.current) {
+							const { url } = data;
+							try {
+								await props.onAuth1Connect(props.integration, url);
+							} catch (err) {
+								ref.current.contentWindow.postMessage({ command: 'setOAuth1Connect', source: SOURCE, err }, '*');
+							}
+						} else {
+							if (debug) console.log('Installer:: setOAuth1Connect ignored because iframe is being unloaded');
 						}
 						break;
 					}
 					case 'setValidate': {
-						const { config } = data;
-						try {
-							const result = await props.onValidate(props.integration, config);
-							ref.current.contentWindow.postMessage({ command: 'setValidate', source: SOURCE, result }, '*');
-						} catch (err) {
-							ref.current.contentWindow.postMessage({ command: 'setValidate', source: SOURCE, err }, '*');
+						if (ref.current) {
+							const { config } = data;
+							try {
+								console.log('BEFORE VALIDATE', config);
+								const result = await props.onValidate(props.integration, config);
+								console.log('AFTER VALIDATE', result);
+								ref.current.contentWindow.postMessage({ command: 'setValidate', source: SOURCE, result }, '*');
+							} catch (err) {
+								console.error(err);
+								ref.current.contentWindow.postMessage({ command: 'setValidate', source: SOURCE, err }, '*');
+							}
+						} else {
+							if (debug) console.log('Installer:: setValidate ignored because iframe is being unloaded');
 						}
 						break;
 					}
 					case 'setSelfManagedAgentRequired': {
 						props.setSelfManagedAgentRequired();
-						ref.current.contentWindow.postMessage({ command: 'setSelfManagedAgentRequired', source: SOURCE }, '*');
+						if (ref.current) {
+							ref.current.contentWindow.postMessage({ command: 'setSelfManagedAgentRequired', source: SOURCE }, '*');
+						} else {
+							if (debug) console.log('Installer:: setSelfManagedAgentRequired ignored because iframe is being unloaded');
+						}
 						break;
 					}
 					case 'createPrivateKey': {
@@ -210,35 +239,56 @@ const Installer = (props: InstallerProps) => {
 							// we should probably pass this in since it can be overriden by environment
 							const [data] = await Graphql.query(props.session.graphqlUrl, privateKeyQuery);
 							const privateKey = data?.custom.agent.privateKey;
-							ref.current.contentWindow.postMessage({
-								command: 'createPrivateKey',
-								source: SOURCE,
-								result: privateKey,
-							}, '*');
+							if (ref.current) {
+								ref.current.contentWindow.postMessage({
+									command: 'createPrivateKey',
+									source: SOURCE,
+									result: privateKey,
+								}, '*');
+							} else {
+								if (debug) console.log('Installer:: createPrivateKey ignored because iframe is being unloaded');
+							}
 						} catch (err) {
-							ref.current.contentWindow.postMessage({
-								command: 'createPrivateKey',
-								source: SOURCE,
-								err,
-							}, '*');
+							if (ref.current) {
+								ref.current.contentWindow.postMessage({
+									command: 'createPrivateKey',
+									source: SOURCE,
+									err,
+								}, '*');
+							} else {
+								console.error(err);
+								if (debug) console.log('Installer:: createPrivateKey ignored because iframe is being unloaded');
+							}
 						}
 						break;
 					}
 					case 'setPrivateKey': {
 						const { value } = data;
 						await props.setPrivateKey(props.integration, value);
-						ref.current.contentWindow.postMessage({ command: 'setPrivateKey', source: SOURCE }, '*');
+						if (ref.current) {
+							ref.current.contentWindow.postMessage({ command: 'setPrivateKey', source: SOURCE }, '*');
+						} else {
+							if (debug) console.log('Installer:: setPrivateKey ignored because iframe is being unloaded');
+						}
 						break;
 					}
 					case 'getPrivateKey': {
 						const value = await props.getPrivateKey(props.integration);
-						ref.current.contentWindow.postMessage({ command: 'getPrivateKey', source: SOURCE, value }, '*');
+						if (ref.current) {
+							ref.current.contentWindow.postMessage({ command: 'getPrivateKey', source: SOURCE, value }, '*');
+						} else {
+							if (debug) console.log('Installer:: getPrivateKey ignored because iframe is being unloaded');
+						}
 						break;
 					}
 					case 'setInstallLocation': {
 						const { value } = data;
 						await props.setInstallLocation(props.integration, value);
-						ref.current.contentWindow.postMessage({ command: 'setInstallLocation', source: SOURCE }, '*');
+						if (ref.current) {
+							ref.current.contentWindow.postMessage({ command: 'setInstallLocation', source: SOURCE }, '*');
+						} else {
+							if (debug) console.log('Installer:: setInstallLocation ignored because iframe is being unloaded');
+						}
 						break;
 					}
 					case 'fetch': {
@@ -264,19 +314,27 @@ const Installer = (props: InstallerProps) => {
 							const graphHeaders: any = {};
 							const [data, statusCode] = await Graphql.query(props.session.graphqlUrl, fetchQuery, vars, graphHeaders);
 							const o = data?.custom?.agent?.fetch;
-							ref.current.contentWindow.postMessage({
-								command: 'fetch',
-								source: SOURCE,
-								statusCode: o?.statusCode ?? statusCode,
-								headers: o?.headers,
-								body: o?.body,
-							}, '*');
+							if (ref.current) {
+								ref.current.contentWindow.postMessage({
+									command: 'fetch',
+									source: SOURCE,
+									statusCode: o?.statusCode ?? statusCode,
+									headers: o?.headers,
+									body: o?.body,
+								}, '*');
+							} else {
+								if (debug) console.log('Installer:: fetch ignored because iframe is being unloaded');
+							}
 						} catch (err) {
-							ref.current.contentWindow.postMessage({
-								command: 'fetch',
-								source: SOURCE,
-								err,
-							}, '*');
+							if (ref.current) {
+								ref.current.contentWindow.postMessage({
+									command: 'fetch',
+									source: SOURCE,
+									err,
+								}, '*');
+							} else {
+								console.error(err);
+							}
 						}
 						break;
 					}
@@ -314,6 +372,9 @@ const Installer = (props: InstallerProps) => {
 			ref.current.contentWindow.postMessage({ command: 'handleAuthChange', source: SOURCE }, '*');
 		}
 	}, [ref.current]);
+	useEffect(() => {
+		console.log('REF CURRENT CHANGED', ref.current);
+	}, [ref.current]);
 	if (showDialog) {
 		return (
 			<Dialog>
@@ -335,6 +396,17 @@ const Installer = (props: InstallerProps) => {
 	}
 	const authDate = props.authorization?.authorizer?.created;
 	const authName = props.authorization?.authorizer?.name;
+	const frame = useMemo(() => {
+		console.log('>>>> creating a new frame');
+		return (
+			<Frame
+				ref={ref}
+				name={props.integration.name}
+				url={props.integration.uiURL}
+				onLoad={onLoad}
+			/>
+		);
+	}, []);
 	return (
 		<div className={[styles.Wrapper, props.className].join(' ')}>
 			<Header
@@ -354,14 +426,9 @@ const Installer = (props: InstallerProps) => {
 				handleChangeAuth={handleAuthChange}
 			/>
 			{!ready && <Loader screen />}
-			<Frame
-				ref={ref}
-				name={props.integration.name}
-				url={props.integration.uiURL}
-				onLoad={onLoad}
-			/>
+			{frame}
 		</div>
 	);
-};
+});
 
 export default Installer;

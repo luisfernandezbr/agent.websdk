@@ -144,8 +144,8 @@ export interface IAppContext {
 	session: ISession;
 	// setOAuth1Connect is called if the integration wants to invoke callback when an oauth1 auth connect event is received by refType and for url
 	setOAuth1Connect: (url: string, callback?: (err: Maybe<Error>) => void) => void;
-	// setValidate will send the config for validation by the integration and then invoke callback with the result when received by the integration
-	setValidate: (config: Config, callback?: (err: Maybe<Error>, res: Maybe<any>) => void) => void;
+	// setValidate will send the config for validation by the integration and return the result when received by the integration
+	setValidate: (config: Config) => Promise<any>;
 	// fetch will allow the integration to fetch (outside of the browser) a url to validate data or to validate reachability of the url
 	fetch: (url: string, headers?: FetchHeaders, method?: FetchMethod) => Promise<IFetchResult>;
 	//	setSelfManagedAgentRequired will navigate to the self managed agent setup screen
