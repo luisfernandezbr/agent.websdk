@@ -289,7 +289,7 @@ const Installer = (props: InstallerProps) => {
 			if (debug) console.log('Installer:: cleanup');
 			window.removeEventListener('message', handler);
 		};
-	}, [oauthURL]);
+	}, []);
 	const dialogCancel = useCallback(() => {
 		setShowDialog(false);
 	}, []);
