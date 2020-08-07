@@ -8,6 +8,8 @@ import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, 
 import { Config } from '../config';
 import styles from './styles.less';
 
+const debug = true;
+
 type Maybe<T> = T | undefined | null;
 
 const SOURCE = 'agent.websdk';
@@ -114,9 +116,10 @@ const Installer = (props: InstallerProps) => {
 			const { data } = e;
 			const { scope, command, refType, source } = data;
 			if (scope === 'INTEGRATION' && source === SOURCE ) {
+				if (debug) console.log('Installer:: handler received', data, 'window', ref.current, 'stack', new Error().stack);
 				switch (command) {
 					case 'init': {
-						if (ref.current) ref.current.style.display = '';
+						ref.current.style.display = '';
 						setReady(true);
 						break;
 					}
@@ -283,6 +286,7 @@ const Installer = (props: InstallerProps) => {
 		}
 		window.addEventListener('message', handler);
 		return () => {
+			if (debug) console.log('Installer:: cleanup');
 			window.removeEventListener('message', handler);
 		};
 	}, [oauthURL]);
