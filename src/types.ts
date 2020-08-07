@@ -152,6 +152,8 @@ export interface IAppContext {
 	setSelfManagedAgentRequired: () => void;
 	// selfManagedAgent returns the self managed agent instance details if setup
 	selfManagedAgent?: Maybe<ISelfManagedAgent>;
+	// getPrivateKey returns the private key if generated or null if not generated
+	getPrivateKey: () => Promise<string | null>;
 	// setPrivateKey will the a private key on the integration instance
 	setPrivateKey: (key: string) => Promise<void>;
 	// createPrivateKey will return an RSA private key in PEM, PKCS#8 format

@@ -52,6 +52,10 @@ const setSelfManagedAgentRequired = () => {
 const setPrivateKey = async () => {
 };
 
+const getPrivateKey =() => {
+	return Promise.resolve(null);
+};
+
 const setInstallLocation = async () => {
 };
 
@@ -125,6 +129,7 @@ const SimulatorInstaller = ({
 			selfManagedAgent={selfManagedAgent}
 			session={session}
 			setPrivateKey={setPrivateKey}
+			getPrivateKey={getPrivateKey}
 			setInstallLocation={setInstallLocation}
 		/>
 	);

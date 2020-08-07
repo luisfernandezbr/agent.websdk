@@ -42,6 +42,7 @@ export const AppContextProvider = ({
 	const createPrivateKeyPromise = useRef<any[]>();
 	const setPrivateKeyPromise = useRef<any[]>();
 	const setInstallLocationPromise = useRef<any[]>();
+	const getPrivateKeyPromise = useRef<any[]>();
 	
 	const setInstallEnabled = useCallback((value: boolean) => {
 		window.parent.postMessage({
@@ -274,6 +275,19 @@ export const AppContextProvider = ({
 						}
 						break;
 					}
+					case 'getPrivateKey': {
+						if (getPrivateKeyPromise.current) {
+							const { value, err } = data;
+							const [resolve, reject] = getPrivateKeyPromise.current;
+							getPrivateKeyPromise.current = null;
+							if (err) {
+								reject(err);
+							} else {
+								resolve(value);
+							}
+						}
+						break;
+					}
 					case 'createPrivateKey': {
 						if (createPrivateKeyPromise.current) {
 							const { err, result } = data;
@@ -409,6 +423,20 @@ export const AppContextProvider = ({
 		return promise;
 	}, []);
 
+	const getPrivateKey = useCallback(() => {
+		const promise = new Promise<string | null>((resolve, reject) => {
+			getPrivateKeyPromise.current = [resolve, reject];
+			window.parent.postMessage({
+				command: 'getPrivateKey',
+				source,
+				scope,
+				publisher,
+				refType,
+			}, '*');
+		});
+		return promise;
+	}, []);
+
 	const setInstallLocation = useCallback((location: IInstalledLocation) => {
 		const promise = new Promise<void>((resolve, reject) => {
 			setInstallLocationPromise.current = [resolve, reject];
@@ -452,6 +480,7 @@ export const AppContextProvider = ({
 				selfManagedAgent,
 				createPrivateKey,
 				setPrivateKey,
+				getPrivateKey,
 				setInstallLocation,
 			}}
 		>

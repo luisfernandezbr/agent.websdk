@@ -29,6 +29,7 @@ export interface InstallerProps {
 	setSelfManagedAgentRequired: () => void;
 	selfManagedAgent?: Maybe<ISelfManagedAgent>;
 	setPrivateKey: (integration: Integration, key: string) => Promise<void>;
+	getPrivateKey: (integration: Integration) => Promise<string | null>;
 	setInstallLocation: (integration: Integration, location: IInstalledLocation) => Promise<void>;
 }
 
@@ -224,6 +225,11 @@ const Installer = (props: InstallerProps) => {
 						const { value } = data;
 						await props.setPrivateKey(props.integration, value);
 						ref.current.contentWindow.postMessage({ command: 'setPrivateKey', source: SOURCE }, '*');
+						break;
+					}
+					case 'getPrivateKey': {
+						const value = await props.getPrivateKey(props.integration);
+						ref.current.contentWindow.postMessage({ command: 'getPrivateKey', source: SOURCE, value }, '*');
 						break;
 					}
 					case 'setInstallLocation': {
