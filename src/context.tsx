@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCallbackOne as useCallback } from 'use-memo-one';
 import { IAppContext, IAppAuthorization, IProcessingDetail, OAuthVersion, FetchHeaders, FetchMethod, IFetchResult, ISelfManagedAgent, ISession, IInstalledLocation } from './types';
 import { Config } from './config';
 
@@ -25,9 +26,9 @@ export const AppContextProvider = ({
 	const [isFromReAuth, setIsFromReAuth] = useState(false);
 	const [currentURL, setCurrentURL] = useState<string>('');
 	const [installed, setInstalled] = useState<boolean>(false);
-	const [, setRerender] = useState(0);
 	const [id, setID] = useState();
 	const currentConfig = useRef<Config>({});
+	const [config, _setConfig] = useState<Config>({});
 	const [authorization, setAuthorization] = useState<IAppAuthorization>();
 	const [processingDetail, setProcessingDetail] = useState<IProcessingDetail>();
 	const [selfManagedAgent, setSelfManagedAgent] = useState<ISelfManagedAgent>();
@@ -53,7 +54,7 @@ export const AppContextProvider = ({
 			refType,
 			value,
 		}, '*');
-	}, []);
+	}, [window.parent]);
 	const setConfig = useCallback((value: Config) => {
 		window.parent.postMessage({
 			command: 'setConfig',
@@ -63,7 +64,7 @@ export const AppContextProvider = ({
 			refType,
 			value,
 		}, '*');
-	}, []);
+	}, [window.parent]);
 	const setRedirectTo = useCallback((url: string) => {
 		window.parent.postMessage({
 			command: 'setRedirectTo',
@@ -73,7 +74,7 @@ export const AppContextProvider = ({
 			refType,
 			url,
 		}, '*');
-	}, []);
+	}, [window.parent]);
 	const setAppOAuthURL = useCallback((url: string) => {
 		window.parent.postMessage({
 			command: 'setAppOAuthURL',
@@ -83,7 +84,7 @@ export const AppContextProvider = ({
 			refType,
 			url,
 		}, '*');
-	}, []);
+	}, [window.parent]);
 	const getRedirectURL = useCallback(() => {
 		const promise = new Promise<string>((resolve, reject) => {
 			redirectPromise.current = [resolve, reject];
@@ -96,7 +97,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 	const getAppOAuthURL = useCallback((redirectTo: string, version?: Maybe<OAuthVersion>, baseuri?: Maybe<string>) => {
 		const promise = new Promise<string>((resolve, reject) => {
 			redirectOAuthPromise.current = [resolve, reject];
@@ -112,7 +113,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 	const getConfig = useCallback(() => {
 		const promise = new Promise<Config>((resolve, reject) => {
 			configPromise.current = [resolve, reject];
@@ -125,15 +126,15 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 
 	const onReAuthed = useCallback(() => setIsFromReAuth(false), []);
 	useEffect(() => {
 		const handler = async (e: any) => {
 			if (e.data) {
 				const { data } = e;
-				const { source, command } = data;
-				if (source !== 'agent.websdk') {
+				const { source: _source, command } = data;
+				if (source !== _source) {
 					return;
 				}
 				switch (command) {
@@ -154,6 +155,7 @@ export const AppContextProvider = ({
 						setCurrentURL(_url);
 						setInstalled(_installed);
 						currentConfig.current = _config;
+						_setConfig(_config);
 						setAuthorization(_authorization);
 						setProcessingDetail(_processingDetail);
 						setSelfManagedAgent(_selfManagedAgent);
@@ -183,9 +185,9 @@ export const AppContextProvider = ({
 					}
 					case 'setConfig': {
 						const { config } = data;
+						currentConfig.current = config;
 						if (config && JSON.stringify(config) !== JSON.stringify(currentConfig.current)) {
-							currentConfig.current = config;
-							setRerender(Date.now()); // force a re-render to send down to children
+							_setConfig(config);
 						}	
 						break;
 					}
@@ -322,6 +324,7 @@ export const AppContextProvider = ({
 		};
 		window.addEventListener('message', handler);
 		return () => {
+			window.removeEventListener('message', handler);
 			window.parent.postMessage({
 				command: 'EXIT',
 				scope,
@@ -329,7 +332,6 @@ export const AppContextProvider = ({
 				publisher,
 				refType,
 			}, '*');
-			window.removeEventListener('message', handler);
 		};
 	}, []);
 
@@ -348,7 +350,7 @@ export const AppContextProvider = ({
 			refType,
 			url,
 		}, '*');
-	}, []);
+	}, [window.parent]);
 
 	const setValidate = useCallback((config: Config) => {
 		if (!config) {
@@ -368,7 +370,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 
 	const fetch = useCallback((url: string, headers?: FetchHeaders, method?: FetchMethod) => {
 		const promise = new Promise<IFetchResult>((resolve, reject) => {
@@ -385,7 +387,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 
 	const setSelfManagedAgentRequired = useCallback(() => {
 		const promise = new Promise<void>((resolve, reject) => {
@@ -399,7 +401,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 
 	const setPrivateKey = useCallback((value: string) => {
 		const promise = new Promise<void>((resolve, reject) => {
@@ -414,7 +416,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 
 	const createPrivateKey = useCallback(() => {
 		const promise = new Promise<string>((resolve, reject) => {
@@ -428,7 +430,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 
 	const getPrivateKey = useCallback(() => {
 		const promise = new Promise<string | null>((resolve, reject) => {
@@ -442,7 +444,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 
 	const setInstallLocation = useCallback((location: IInstalledLocation) => {
 		const promise = new Promise<void>((resolve, reject) => {
@@ -457,7 +459,7 @@ export const AppContextProvider = ({
 			}, '*');
 		});
 		return promise;
-	}, []);
+	}, [window.parent]);
 
 	return (
 		<AppContext.Provider
@@ -468,7 +470,7 @@ export const AppContextProvider = ({
 				setRedirectTo,
 				currentURL,
 				installed,
-				config: {...currentConfig.current},
+				config,
 				getRedirectURL,
 				getAppOAuthURL,
 				setAppOAuthURL,

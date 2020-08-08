@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
+import { useCallbackOne as useCallback } from 'use-memo-one';
 import { Button, ListPanel, Icon, Tooltip, Theme } from '@pinpt/uic.next';
 import { useIntegration } from '../../useIntegration';
 import { AskDialog } from '../AskDialog';
@@ -43,7 +44,7 @@ const AccountSelector = ({account, config}: {account: Account, config: Config}) 
 		}
 		setInstallEnabled(installed ? true : Object.keys(config.accounts).length > 0);
 		setConfig(config);
-	}, [setSelected, setConfig, setInstallEnabled, account, config, installed]);
+	}, [config, installed]);
 
 	return (
 		<input

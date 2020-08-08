@@ -52,7 +52,7 @@ const setSelfManagedAgentRequired = () => {
 const setPrivateKey = async () => {
 };
 
-const getPrivateKey =() => {
+const defaultGetPrivateKey =() => {
 	return Promise.resolve(null);
 };
 
@@ -74,10 +74,12 @@ const getEnv = () => {
 };
 
 const SimulatorInstaller = ({
+	id = '1234567890',
 	integration,
 	processingDetail,
 	onValidate,
 	selfManagedAgent,
+	getPrivateKey = defaultGetPrivateKey,
 	session = {
 		customer: {
 			id: (window as any).PinpointAuth?.customer?.id ?? '1234',
@@ -93,11 +95,13 @@ const SimulatorInstaller = ({
 		authUrl: 'https://auth.api.pinpoint.com'
 	}
 }: {
+	id?: string,
 	integration: Integration,
 	processingDetail?: IProcessingDetail,
 	onValidate?: (config: Config) => Promise<any>,
 	selfManagedAgent?: Maybe<ISelfManagedAgent>,
 	session?: Maybe<ISession>,
+	getPrivateKey?: Maybe<() => Promise<string>>,
 }) => {
 	integration.installed = window.localStorage.getItem(`installer.${integration.refType}`) === 'true';
 	var conf: Config = JSON.parse(window.localStorage.getItem(`installer.config.${integration.refType}`))?.oauth2_auth || {};
@@ -113,7 +117,7 @@ const SimulatorInstaller = ({
 	}
 	return (
 		<Installer
-			id="1234567790"
+			id={id}
 			className={styles.Simulator}
 			integration={integration}
 			processingDetail={processingDetail}

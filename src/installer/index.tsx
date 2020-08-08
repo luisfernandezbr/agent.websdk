@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useRef, useMemo, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Dialog, Icon, Loader } from '@pinpt/uic.next';
+import { useCallbackOne as useCallback } from 'use-memo-one';
 import { Header } from './components';
 import Integration from './types';
 import Graphql from '../graphql';
@@ -73,9 +74,11 @@ const privateKeyQuery = `query privatekey {
 	}
 }`;
 
-const Installer = React.memo((props: InstallerProps) => {
+
+const Installer = (props: InstallerProps) => {
 	const ref = useRef<any>();
-	const [isInstalled, setIsInstalled] = useState(props.integration.installed);
+	const frameref = useRef<any>();
+	const [isInstalled, setIsInstalled] = useState(props.integration?.installed);
 	const [installEnabled, setInstallEnabled] = useState(false);
 	const currentConfig = useRef<Config>({});
 	const [showDialog, setShowDialog] = useState(false);
@@ -84,7 +87,7 @@ const Installer = React.memo((props: InstallerProps) => {
 	const [ready, setReady] = useState(false);
 
 	const onLoad = useCallback(() => {
-		if (!loaded.current) {
+		if (!loaded.current && ref.current) {
 			const redirected = document.location.search.indexOf('integration=redirect') > 0;
 			const url = document.location.href;
 			if (redirected) {
@@ -108,13 +111,23 @@ const Installer = React.memo((props: InstallerProps) => {
 			}, '*');
 			loaded.current = true;
 		}
-	}, [ref, isInstalled, loaded.current]);
+	}, [ref.current, isInstalled, loaded.current]);
+
+	const deliverMessageToFrame = useCallback((command: string, args: any) => {
+		if (ref.current) {
+			if (debug) console.log('deliverMessageToFrame', command, args);
+			ref.current.contentWindow.postMessage({ command, source: SOURCE, ...args }, '*');
+		} else {
+			if (debug) console.log('deliverMessageToFrame SKIPPED because ref.current is null', command, args);
+		}
+	}, [ref.current]);
+
 	useEffect(() => {
 		const handler = async (e: any) => {
 			const { data } = e;
 			const { scope, command, refType, source } = data;
 			if (scope === 'INTEGRATION' && source === SOURCE ) {
-				if (debug) console.log('Installer:: handler received', data, 'window', ref.current, 'stack', new Error().stack);
+				if (debug) console.log('Installer:: handler received', data);
 				switch (command) {
 					case 'init': {
 						ref.current.style.display = '';
@@ -134,7 +147,7 @@ const Installer = React.memo((props: InstallerProps) => {
 								config = {};
 							}
 							currentConfig.current = config;
-							ref.current.contentWindow.postMessage({ command: 'getConfig', source: SOURCE, config }, '*');
+							deliverMessageToFrame('getConfig', { config });
 						} else {
 							if (debug) console.log('Installer:: getConfig ignored because iframe is being unloaded');
 						}
@@ -146,7 +159,7 @@ const Installer = React.memo((props: InstallerProps) => {
 						if (JSON.stringify(currentConfig.current) !== JSON.stringify(value)) {
 							currentConfig.current = value;
 							if (ref.current) {
-								ref.current.contentWindow.postMessage({ command: 'setConfig', source: SOURCE, config: value }, '*');
+								deliverMessageToFrame('setConfig', { config: value });
 							} else {
 								if (debug) console.log('Installer:: setConfig ignored because iframe is being unloaded');
 							}
@@ -163,7 +176,7 @@ const Installer = React.memo((props: InstallerProps) => {
 							const redirectURL = document.location.href;
 							const sep = redirectURL.indexOf('?') > 0 ? '&' : '?';
 							const url = redirectURL + (redirectURL.indexOf('integration=') < 0 ? sep + 'integration=redirect' : '');
-							ref.current.contentWindow.postMessage({ command: 'getRedirectURL', source: SOURCE, url }, '*');
+							deliverMessageToFrame('getRedirectURL', { url });
 						} else {
 							if (debug) console.log('Installer:: getRedirectURL ignored because iframe is being unloaded');
 						}
@@ -184,7 +197,7 @@ const Installer = React.memo((props: InstallerProps) => {
 							}
 							const sep = url.indexOf('?') > 0 ? '&' : '?';
 							url += `${sep}redirect_to=${encodeURIComponent(redirectTo)}`
-							ref.current.contentWindow.postMessage({ command: 'getAppOAuthURL', source: SOURCE, url }, '*');
+							deliverMessageToFrame('getAppOAuthURL', { url });
 						} else {
 							if (debug) console.log('Installer:: getAppOAuthURL ignored because iframe is being unloaded');
 						}
@@ -201,7 +214,7 @@ const Installer = React.memo((props: InstallerProps) => {
 							try {
 								await props.onAuth1Connect(props.integration, url);
 							} catch (err) {
-								ref.current.contentWindow.postMessage({ command: 'setOAuth1Connect', source: SOURCE, err }, '*');
+								deliverMessageToFrame('setOAuth1Connect', { err });
 							}
 						} else {
 							if (debug) console.log('Installer:: setOAuth1Connect ignored because iframe is being unloaded');
@@ -212,13 +225,11 @@ const Installer = React.memo((props: InstallerProps) => {
 						if (ref.current) {
 							const { config } = data;
 							try {
-								console.log('BEFORE VALIDATE', config);
 								const result = await props.onValidate(props.integration, config);
-								console.log('AFTER VALIDATE', result);
-								ref.current.contentWindow.postMessage({ command: 'setValidate', source: SOURCE, result }, '*');
+								deliverMessageToFrame('setValidate', { result });
 							} catch (err) {
 								console.error(err);
-								ref.current.contentWindow.postMessage({ command: 'setValidate', source: SOURCE, err }, '*');
+								deliverMessageToFrame('setValidate', { err });
 							}
 						} else {
 							if (debug) console.log('Installer:: setValidate ignored because iframe is being unloaded');
@@ -228,7 +239,7 @@ const Installer = React.memo((props: InstallerProps) => {
 					case 'setSelfManagedAgentRequired': {
 						props.setSelfManagedAgentRequired();
 						if (ref.current) {
-							ref.current.contentWindow.postMessage({ command: 'setSelfManagedAgentRequired', source: SOURCE }, '*');
+							deliverMessageToFrame('setSelfManagedAgentRequired', {});
 						} else {
 							if (debug) console.log('Installer:: setSelfManagedAgentRequired ignored because iframe is being unloaded');
 						}
@@ -240,21 +251,13 @@ const Installer = React.memo((props: InstallerProps) => {
 							const [data] = await Graphql.query(props.session.graphqlUrl, privateKeyQuery);
 							const privateKey = data?.custom.agent.privateKey;
 							if (ref.current) {
-								ref.current.contentWindow.postMessage({
-									command: 'createPrivateKey',
-									source: SOURCE,
-									result: privateKey,
-								}, '*');
+								deliverMessageToFrame('createPrivateKey', { result: privateKey });
 							} else {
 								if (debug) console.log('Installer:: createPrivateKey ignored because iframe is being unloaded');
 							}
 						} catch (err) {
 							if (ref.current) {
-								ref.current.contentWindow.postMessage({
-									command: 'createPrivateKey',
-									source: SOURCE,
-									err,
-								}, '*');
+								deliverMessageToFrame('createPrivateKey', { err });
 							} else {
 								console.error(err);
 								if (debug) console.log('Installer:: createPrivateKey ignored because iframe is being unloaded');
@@ -266,7 +269,7 @@ const Installer = React.memo((props: InstallerProps) => {
 						const { value } = data;
 						await props.setPrivateKey(props.integration, value);
 						if (ref.current) {
-							ref.current.contentWindow.postMessage({ command: 'setPrivateKey', source: SOURCE }, '*');
+							deliverMessageToFrame('setPrivateKey', {});
 						} else {
 							if (debug) console.log('Installer:: setPrivateKey ignored because iframe is being unloaded');
 						}
@@ -275,7 +278,7 @@ const Installer = React.memo((props: InstallerProps) => {
 					case 'getPrivateKey': {
 						const value = await props.getPrivateKey(props.integration);
 						if (ref.current) {
-							ref.current.contentWindow.postMessage({ command: 'getPrivateKey', source: SOURCE, value }, '*');
+							deliverMessageToFrame('getPrivateKey', { value });
 						} else {
 							if (debug) console.log('Installer:: getPrivateKey ignored because iframe is being unloaded');
 						}
@@ -285,7 +288,7 @@ const Installer = React.memo((props: InstallerProps) => {
 						const { value } = data;
 						await props.setInstallLocation(props.integration, value);
 						if (ref.current) {
-							ref.current.contentWindow.postMessage({ command: 'setInstallLocation', source: SOURCE }, '*');
+							deliverMessageToFrame('setInstallLocation', {});
 						} else {
 							if (debug) console.log('Installer:: setInstallLocation ignored because iframe is being unloaded');
 						}
@@ -315,23 +318,13 @@ const Installer = React.memo((props: InstallerProps) => {
 							const [data, statusCode] = await Graphql.query(props.session.graphqlUrl, fetchQuery, vars, graphHeaders);
 							const o = data?.custom?.agent?.fetch;
 							if (ref.current) {
-								ref.current.contentWindow.postMessage({
-									command: 'fetch',
-									source: SOURCE,
-									statusCode: o?.statusCode ?? statusCode,
-									headers: o?.headers,
-									body: o?.body,
-								}, '*');
+								deliverMessageToFrame('setInstallLocation', { statusCode: o?.statusCode ?? statusCode, headers: o?.headers, body: o?.body });
 							} else {
 								if (debug) console.log('Installer:: fetch ignored because iframe is being unloaded');
 							}
 						} catch (err) {
 							if (ref.current) {
-								ref.current.contentWindow.postMessage({
-									command: 'fetch',
-									source: SOURCE,
-									err,
-								}, '*');
+								deliverMessageToFrame('setInstallLocation', { err } );
 							} else {
 								console.error(err);
 							}
@@ -345,6 +338,7 @@ const Installer = React.memo((props: InstallerProps) => {
 		window.addEventListener('message', handler);
 		return () => {
 			if (debug) console.log('Installer:: cleanup');
+			ref.current = null;
 			window.removeEventListener('message', handler);
 		};
 	}, []);
@@ -372,9 +366,6 @@ const Installer = React.memo((props: InstallerProps) => {
 			ref.current.contentWindow.postMessage({ command: 'handleAuthChange', source: SOURCE }, '*');
 		}
 	}, [ref.current]);
-	useEffect(() => {
-		console.log('REF CURRENT CHANGED', ref.current);
-	}, [ref.current]);
 	if (showDialog) {
 		return (
 			<Dialog>
@@ -396,19 +387,8 @@ const Installer = React.memo((props: InstallerProps) => {
 	}
 	const authDate = props.authorization?.authorizer?.created;
 	const authName = props.authorization?.authorizer?.name;
-	const frame = useMemo(() => {
-		console.log('>>>> creating a new frame');
-		return (
-			<Frame
-				ref={ref}
-				name={props.integration.name}
-				url={props.integration.uiURL}
-				onLoad={onLoad}
-			/>
-		);
-	}, []);
 	return (
-		<div className={[styles.Wrapper, props.className].join(' ')}>
+		<div className={[styles.Wrapper, props.className].join(' ')} ref={frameref}>
 			<Header
 				name={props.integration.name}
 				tags={props.integration.tags}
@@ -426,9 +406,14 @@ const Installer = React.memo((props: InstallerProps) => {
 				handleChangeAuth={handleAuthChange}
 			/>
 			{!ready && <Loader screen />}
-			{frame}
+			<Frame
+				ref={ref}
+				name={props.integration.name}
+				url={props.integration.uiURL}
+				onLoad={onLoad}
+			/>
 		</div>
 	);
-});
+};
 
-export default Installer;
+export default React.memo(Installer);

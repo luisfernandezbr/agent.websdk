@@ -69,7 +69,7 @@ export const Header = (props: HeaderProps) => {
 				</div>
 
 				{
-					props.authorized && props.authDate && (
+					props.authorized && props.authDate && props.installed && (
 						<Tooltip
 							content={<>Last authorized on {moment(props.authDate, 'x').format('MMM Do, YYYY')} by {props.authName}</>}
 							className={styles.Button}
@@ -88,20 +88,20 @@ export const Header = (props: HeaderProps) => {
 					)
 				}
 
+				<Button
+					onClick={props.handleInstall}
+					color="Red"
+					weight={500}
+					className={styles.Button}
+				>
+					<>
+						<Icon icon={['fas', 'trash']} />
+						Uninstall
+					</>
+				</Button>
+
 				{
-					props.installed ? (
-						<Button
-							onClick={props.handleInstall}
-							color="Red"
-							weight={500}
-							className={styles.Button}
-						>
-							<>
-								<Icon icon={['fas', 'trash']} />
-								Uninstall
-							</>
-						</Button>
-					) : (
+					!props.installed && (
 						<Button
 							onClick={props.handleInstall}
 							color="Green"
