@@ -77,7 +77,6 @@ const privateKeyQuery = `query privatekey {
 
 const Installer = (props: InstallerProps) => {
 	const ref = useRef<any>();
-	const frameref = useRef<any>();
 	const [isInstalled, setIsInstalled] = useState(props.integration?.installed);
 	const [installEnabled, setInstallEnabled] = useState(false);
 	const currentConfig = useRef<Config>({});
@@ -343,6 +342,7 @@ const Installer = (props: InstallerProps) => {
 		};
 	}, []);
 	const dialogCancel = useCallback(() => {
+		loaded.current = false; // force a reload
 		setShowDialog(false);
 	}, []);
 	const dialogSubmit = useCallback(async () => {
@@ -388,7 +388,7 @@ const Installer = (props: InstallerProps) => {
 	const authDate = props.authorization?.authorizer?.created;
 	const authName = props.authorization?.authorizer?.name;
 	return (
-		<div className={[styles.Wrapper, props.className].join(' ')} ref={frameref}>
+		<div className={[styles.Wrapper, props.className].join(' ')}>
 			<Header
 				name={props.integration.name}
 				tags={props.integration.tags}

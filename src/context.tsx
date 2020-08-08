@@ -129,6 +129,7 @@ export const AppContextProvider = ({
 	}, [window.parent]);
 
 	const onReAuthed = useCallback(() => setIsFromReAuth(false), []);
+
 	useEffect(() => {
 		const handler = async (e: any) => {
 			if (e.data) {
