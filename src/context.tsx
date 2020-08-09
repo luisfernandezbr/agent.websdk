@@ -456,7 +456,7 @@ export const AppContextProvider = ({
 				scope,
 				publisher,
 				refType,
-				location
+				value: location,
 			}, '*');
 		});
 		return promise;

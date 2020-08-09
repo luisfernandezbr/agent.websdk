@@ -317,13 +317,13 @@ const Installer = (props: InstallerProps) => {
 							const [data, statusCode] = await Graphql.query(props.session.graphqlUrl, fetchQuery, vars, graphHeaders);
 							const o = data?.custom?.agent?.fetch;
 							if (ref.current) {
-								deliverMessageToFrame('setInstallLocation', { statusCode: o?.statusCode ?? statusCode, headers: o?.headers, body: o?.body });
+								deliverMessageToFrame('fetch', { statusCode: o?.statusCode ?? statusCode, headers: o?.headers, body: o?.body });
 							} else {
 								if (debug) console.log('Installer:: fetch ignored because iframe is being unloaded');
 							}
 						} catch (err) {
 							if (ref.current) {
-								deliverMessageToFrame('setInstallLocation', { err } );
+								deliverMessageToFrame('fetch', { err } );
 							} else {
 								console.error(err);
 							}
