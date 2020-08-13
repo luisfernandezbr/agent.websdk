@@ -5,7 +5,7 @@ import { Header } from './components';
 import Integration from './types';
 import Graphql from '../graphql';
 export { default as Integration } from './types';
-import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, ISession, IInstalledLocation } from '../types';
+import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, ISession, IInstalledLocation, IUpgradeRequired } from '../types';
 import { Config } from '../config';
 import styles from './styles.less';
 
@@ -22,6 +22,7 @@ export interface InstallerProps {
 	processingDetail?: Maybe<IProcessingDetail>;
 	authorization?: Maybe<IAppAuthorization>;
 	session?: Maybe<ISession>;
+	upgradeRequired?: Maybe<IUpgradeRequired>;
 	setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
 	getConfig: (integration: Integration) => Promise<Config>;
 	setConfig: (integration: Integration, config: Config) => Promise<void>;
@@ -34,6 +35,7 @@ export interface InstallerProps {
 	setPrivateKey: (integration: Integration, key: string) => Promise<void>;
 	getPrivateKey: (integration: Integration) => Promise<string | null>;
 	setInstallLocation: (integration: Integration, location: IInstalledLocation) => Promise<void>;
+	setUpgradeComplete: (integration: Integration) => Promise<void>;
 }
 
 const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any) => {
@@ -293,6 +295,15 @@ const Installer = (props: InstallerProps) => {
 						}
 						break;
 					}
+					case 'setUpgradeComplete': {
+						await props.setUpgradeComplete(props.integration);
+						if (ref.current) {
+							deliverMessageToFrame('setUpgradeComplete', {});
+						} else {
+							if (debug) console.log('Installer:: setUpgradeComplete ignored because iframe is being unloaded');
+						}
+						break;
+					}
 					case 'fetch': {
 						const { url, method, headers } = data;
 						const h: any[] = [];
@@ -351,16 +362,16 @@ const Installer = (props: InstallerProps) => {
 		setIsInstalled(false);
 		setInstallEnabled(false);
 		await props.onRemove(props.integration);
+		loaded.current = false;
 	}, []);
-	const handleInstall = useCallback(async () => {
-		if (isInstalled) {
+	const handleInstall = useCallback(async (action: 'install' | 'remove') => {
+		if (action === 'remove') {
 			setShowDialog(true);
 		} else {
-			// this is an install
 			await props.onInstall(props.integration);
 			setIsInstalled(true);
 		}
-	}, [isInstalled]);
+	}, [props, setShowDialog, setIsInstalled]);
 	const handleAuthChange = useCallback(() => {
 		if (ref.current) {
 			ref.current.contentWindow.postMessage({ command: 'handleAuthChange', source: SOURCE }, '*');

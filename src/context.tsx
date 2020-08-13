@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCallbackOne as useCallback } from 'use-memo-one';
-import { IAppContext, IAppAuthorization, IProcessingDetail, OAuthVersion, FetchHeaders, FetchMethod, IFetchResult, ISelfManagedAgent, ISession, IInstalledLocation } from './types';
+import { IAppContext, IAppAuthorization, IProcessingDetail, OAuthVersion, FetchHeaders, FetchMethod, IFetchResult, ISelfManagedAgent, ISession, IInstalledLocation, IUpgradeRequired } from './types';
 import { Config } from './config';
 
 type Maybe<T> = T | undefined | null;
@@ -32,6 +32,7 @@ export const AppContextProvider = ({
 	const [authorization, setAuthorization] = useState<IAppAuthorization>();
 	const [processingDetail, setProcessingDetail] = useState<IProcessingDetail>();
 	const [selfManagedAgent, setSelfManagedAgent] = useState<ISelfManagedAgent>();
+	const [upgradeRequired, setUpgradeRequired] = useState<IUpgradeRequired>();
 	const [session, setSession] = useState<ISession>();
 	const redirectPromise = useRef<any[]>();
 	const redirectOAuthPromise = useRef<any[]>();
@@ -44,6 +45,7 @@ export const AppContextProvider = ({
 	const setPrivateKeyPromise = useRef<any[]>();
 	const setInstallLocationPromise = useRef<any[]>();
 	const getPrivateKeyPromise = useRef<any[]>();
+	const setUpgradeCompletePromise = useRef<any[]>();
 	
 	const setInstallEnabled = useCallback((value: boolean) => {
 		window.parent.postMessage({
@@ -149,6 +151,7 @@ export const AppContextProvider = ({
 							authorization: _authorization,
 							processingDetail: _processingDetail,
 							selfManagedAgent: _selfManagedAgent,
+							upgradeRequired: _upgradeRequired,
 							session: _session,
 						} = data;
 						setID(_id);
@@ -160,6 +163,7 @@ export const AppContextProvider = ({
 						setAuthorization(_authorization);
 						setProcessingDetail(_processingDetail);
 						setSelfManagedAgent(_selfManagedAgent);
+						setUpgradeRequired(_upgradeRequired);
 						setSession(_session);
 						setLoading(false);
 						window.parent.postMessage({
@@ -319,6 +323,18 @@ export const AppContextProvider = ({
 							}
 						}
 					}
+					case 'setUpgradeComplete': {
+						if (setUpgradeCompletePromise.current) {
+							const { err } = data;
+							const [resolve, reject] = setUpgradeCompletePromise.current;
+							setUpgradeCompletePromise.current = null;
+							if (err) {
+								reject(err);
+							} else {
+								resolve();
+							}
+						}
+					}
 					default: break;
 				}
 			}
@@ -462,6 +478,20 @@ export const AppContextProvider = ({
 		return promise;
 	}, [window.parent]);
 
+	const setUpgradeComplete = useCallback(() => {
+		const promise = new Promise<void>((resolve, reject) => {
+			setUpgradeCompletePromise.current = [resolve, reject];
+			window.parent.postMessage({
+				command: 'setUpgradeComplete',
+				source,
+				scope,
+				publisher,
+				refType,
+			}, '*');
+		});
+		return promise;
+	}, [window.parent]);
+
 	return (
 		<AppContext.Provider
 			value={{
@@ -481,6 +511,7 @@ export const AppContextProvider = ({
 				loading,
 				setLoading,
 				processingDetail,
+				upgradeRequired,
 				onReAuthed,
 				session,
 				setOAuth1Connect,
@@ -492,6 +523,7 @@ export const AppContextProvider = ({
 				setPrivateKey,
 				getPrivateKey,
 				setInstallLocation,
+				setUpgradeComplete,
 			}}
 		>
 			{children}

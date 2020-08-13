@@ -17,7 +17,7 @@ interface HeaderProps {
 	publisher: Publisher;
 	hasError: boolean;
 	errorMessage: string;
-	handleInstall: () => void;
+	handleInstall: (action: 'install' | 'remove') => void;
 	handleChangeAuth: () => void;
 }
 
@@ -89,7 +89,7 @@ export const Header = (props: HeaderProps) => {
 				}
 
 				<Button
-					onClick={props.handleInstall}
+					onClick={() => props.handleInstall('remove')}
 					color="Red"
 					weight={500}
 					className={styles.Button}
@@ -103,7 +103,7 @@ export const Header = (props: HeaderProps) => {
 				{
 					!props.installed && (
 						<Button
-							onClick={props.handleInstall}
+							onClick={() => props.handleInstall('install')}
 							color="Green"
 							weight={500}
 							disabled={!props.enabled}

@@ -1,6 +1,6 @@
 import React from 'react';
 import Integration from './types';
-import { IProcessingDetail, ISelfManagedAgent, ISession } from '../types';
+import { IProcessingDetail, ISelfManagedAgent, ISession, IUpgradeRequired } from '../types';
 import Installer from './index';
 import styles from './styles.less';
 import { Config } from 'index';
@@ -59,6 +59,9 @@ const defaultGetPrivateKey =() => {
 const setInstallLocation = async () => {
 };
 
+const setUpgradeComplete = async () => {
+};
+
 const getEnv = () => {
 	if ((window as any).PinpointEnv) {
 		return (window as any).PinpointEnv;
@@ -77,6 +80,7 @@ const SimulatorInstaller = ({
 	id = '1234567890',
 	integration,
 	processingDetail,
+	upgradeRequired,
 	onValidate,
 	selfManagedAgent,
 	getPrivateKey = defaultGetPrivateKey,
@@ -98,6 +102,7 @@ const SimulatorInstaller = ({
 	id?: string,
 	integration: Integration,
 	processingDetail?: IProcessingDetail,
+	upgradeRequired?: Maybe<IUpgradeRequired>,
 	onValidate?: (config: Config) => Promise<any>,
 	selfManagedAgent?: Maybe<ISelfManagedAgent>,
 	session?: Maybe<ISession>,
@@ -121,6 +126,7 @@ const SimulatorInstaller = ({
 			className={styles.Simulator}
 			integration={integration}
 			processingDetail={processingDetail}
+			upgradeRequired={upgradeRequired}
 			authorization={auth}
 			setInstallEnabled={setInstallEnabled}
 			getConfig={getConfig}
@@ -135,6 +141,7 @@ const SimulatorInstaller = ({
 			setPrivateKey={setPrivateKey}
 			getPrivateKey={getPrivateKey}
 			setInstallLocation={setInstallLocation}
+			setUpgradeComplete={setUpgradeComplete}
 		/>
 	);
 };

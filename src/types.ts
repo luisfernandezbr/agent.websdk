@@ -103,6 +103,12 @@ export interface ISelfManagedAgent {
 	running: boolean;
 }
 
+export interface IUpgradeRequired {
+	message?: string;
+	due_date_ts?: number;
+	requested_date_ts?: number;
+}
+
 export interface IAppContext {
 	// the id for the integration instance
 	id: string;
@@ -124,6 +130,8 @@ export interface IAppContext {
 	authorization?: Maybe<IAppAuthorization>;
 	// detail is the processing detail about setup and processing state of the integration
 	processingDetail?: Maybe<IProcessingDetail>;
+	// upgradeRequired is set if the integration instance has been set to be upgraded
+	upgradeRequired?: Maybe<IUpgradeRequired>;
 	// setInstallEnabled should be called to enable the "Install" button to indicate the integration is available to be installed
 	setInstallEnabled: (enabled: boolean) => void;
 	// setConfig should be called with any specific configuration that the integration needs and this configuration will be passed to the integration
@@ -160,4 +168,6 @@ export interface IAppContext {
 	createPrivateKey: () => Promise<string>;
 	// setInstallLocation will set the installed location for the installation
 	setInstallLocation: (location: IInstalledLocation) => Promise<void>;
+	// setUpgradeComplete should be called to indicate that the integration instance has been upgraded
+	setUpgradeComplete: () => Promise<void>;
 }
