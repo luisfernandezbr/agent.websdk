@@ -83,7 +83,6 @@ const Installer = (props: InstallerProps) => {
 	const [installEnabled, setInstallEnabled] = useState(false);
 	const currentConfig = useRef<Config>({});
 	const [showDialog, setShowDialog] = useState(false);
-	const [oauthURL, setOAuthURL] = useState('');
 	const loaded = useRef(false);
 	const [ready, setReady] = useState(false);
 
@@ -129,10 +128,11 @@ const Installer = (props: InstallerProps) => {
 	}, [ref.current]);
 
 	useEffect(() => {
+		let oauthURL = '';
 		const handler = async (e: any) => {
 			const { data } = e;
 			const { scope, command, refType, source } = data;
-			if (scope === 'INTEGRATION' && source === SOURCE ) {
+			if (scope === 'INTEGRATION' && source === SOURCE) {
 				if (debug) console.log('JGH Installer:: handler received', data);
 				switch (command) {
 					case 'init': {
@@ -174,7 +174,7 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'setAppOAuthURL': {
 						const { url } = data;
-						setOAuthURL(url);
+						oauthURL = url;
 						break;
 					}
 					case 'getRedirectURL': {
@@ -339,7 +339,7 @@ const Installer = (props: InstallerProps) => {
 							}
 						} catch (err) {
 							if (ref.current) {
-								deliverMessageToFrame('fetch', { err } );
+								deliverMessageToFrame('fetch', { err });
 							} else {
 								console.error(err);
 							}
