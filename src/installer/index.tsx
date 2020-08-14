@@ -88,7 +88,7 @@ const Installer = (props: InstallerProps) => {
 	const [ready, setReady] = useState(false);
 
 	const onLoad = useCallback(() => {
-		if (!loaded.current && ref.current) {
+		if ((!loaded.current && ref.current) || ready) {
 			const redirected = document.location.search.indexOf('integration=redirect') > 0;
 			const url = document.location.href;
 			if (redirected) {
@@ -108,11 +108,16 @@ const Installer = (props: InstallerProps) => {
 				redirected,
 				processingDetail: props.processingDetail,
 				selfManagedAgent: props.selfManagedAgent,
+				upgradeRequired: props.upgradeRequired,
 				session: props.session,
 			}, '*');
 			loaded.current = true;
 		}
-	}, [ref.current, isInstalled, loaded.current]);
+		return () => {
+			loaded.current = false;
+			ref.current = false;
+		};
+	}, [ready, ref.current, isInstalled, loaded.current]);
 
 	const deliverMessageToFrame = useCallback((command: string, args: any) => {
 		if (ref.current) {
@@ -128,7 +133,7 @@ const Installer = (props: InstallerProps) => {
 			const { data } = e;
 			const { scope, command, refType, source } = data;
 			if (scope === 'INTEGRATION' && source === SOURCE ) {
-				if (debug) console.log('Installer:: handler received', data);
+				if (debug) console.log('JGH Installer:: handler received', data);
 				switch (command) {
 					case 'init': {
 						ref.current.style.display = '';
