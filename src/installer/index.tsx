@@ -84,6 +84,7 @@ const Installer = (props: InstallerProps) => {
 	const currentConfig = useRef<Config>({});
 	const [showDialog, setShowDialog] = useState(false);
 	const loaded = useRef(false);
+	const oauthURL = useRef('');
 	const [ready, setReady] = useState(false);
 
 	const onLoad = useCallback(() => {
@@ -128,7 +129,6 @@ const Installer = (props: InstallerProps) => {
 	}, [ref.current]);
 
 	useEffect(() => {
-		let oauthURL = '';
 		const handler = async (e: any) => {
 			const { data } = e;
 			const { scope, command, refType, source } = data;
@@ -174,7 +174,7 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'setAppOAuthURL': {
 						const { url } = data;
-						oauthURL = url;
+						oauthURL.current = url;
 						break;
 					}
 					case 'getRedirectURL': {
@@ -192,8 +192,8 @@ const Installer = (props: InstallerProps) => {
 						if (ref.current) {
 							const { redirectTo, version, baseuri } = data;
 							let url: string
-							if (oauthURL !== '') {
-								url = oauthURL;
+							if (oauthURL.current) {
+								url = oauthURL.current;
 							} else {
 								const oauthVersion = version === OAuthVersion.Version1 ? 'oauth1' : 'oauth';
 								url = `${props.session.authUrl}/${oauthVersion}/${refType}`;
