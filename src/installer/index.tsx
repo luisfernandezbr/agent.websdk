@@ -83,8 +83,8 @@ const Installer = (props: InstallerProps) => {
 	const [installEnabled, setInstallEnabled] = useState(false);
 	const currentConfig = useRef<Config>({});
 	const [showDialog, setShowDialog] = useState(false);
-	const [oauthURL, setOAuthURL] = useState('');
 	const loaded = useRef(false);
+	const oauthURL = useRef('');
 	const [ready, setReady] = useState(false);
 
 	const onLoad = useCallback(() => {
@@ -132,7 +132,7 @@ const Installer = (props: InstallerProps) => {
 		const handler = async (e: any) => {
 			const { data } = e;
 			const { scope, command, refType, source } = data;
-			if (scope === 'INTEGRATION' && source === SOURCE ) {
+			if (scope === 'INTEGRATION' && source === SOURCE) {
 				if (debug) console.log('JGH Installer:: handler received', data);
 				switch (command) {
 					case 'init': {
@@ -174,7 +174,7 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'setAppOAuthURL': {
 						const { url } = data;
-						setOAuthURL(url);
+						oauthURL.current = url;
 						break;
 					}
 					case 'getRedirectURL': {
@@ -192,8 +192,8 @@ const Installer = (props: InstallerProps) => {
 						if (ref.current) {
 							const { redirectTo, version, baseuri } = data;
 							let url: string
-							if (oauthURL !== '') {
-								url = oauthURL;
+							if (oauthURL.current) {
+								url = oauthURL.current;
 							} else {
 								const oauthVersion = version === OAuthVersion.Version1 ? 'oauth1' : 'oauth';
 								url = `${props.session.authUrl}/${oauthVersion}/${refType}`;
@@ -339,7 +339,7 @@ const Installer = (props: InstallerProps) => {
 							}
 						} catch (err) {
 							if (ref.current) {
-								deliverMessageToFrame('fetch', { err } );
+								deliverMessageToFrame('fetch', { err });
 							} else {
 								console.error(err);
 							}
