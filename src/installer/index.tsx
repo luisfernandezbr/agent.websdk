@@ -9,7 +9,7 @@ import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, 
 import { Config } from '../config';
 import styles from './styles.less';
 
-const debug = true;
+const debug = /(\.edge\.pinpoint\.com|\.ppoint\.io|\.pinpt\.vercel\.app)/.test(document.location.origin);
 
 type Maybe<T> = T | undefined | null;
 
@@ -117,7 +117,7 @@ const Installer = (props: InstallerProps) => {
 			loaded.current = false;
 			ref.current = false;
 		};
-	}, [ready, ref.current, isInstalled, loaded.current]);
+	}, [ready, ref.current, isInstalled, loaded.current, props]);
 
 	const deliverMessageToFrame = useCallback((command: string, args: any) => {
 		if (ref.current) {
@@ -133,7 +133,7 @@ const Installer = (props: InstallerProps) => {
 			const { data } = e;
 			const { scope, command, refType, source } = data;
 			if (scope === 'INTEGRATION' && source === SOURCE) {
-				if (debug) console.log('JGH Installer:: handler received', data);
+				if (debug) console.log('Installer:: handler received', data);
 				switch (command) {
 					case 'init': {
 						ref.current.style.display = '';
@@ -141,6 +141,10 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'setInstallEnabled': {
+						if (!ready) {
+							ref.current.style.display = '';
+							setReady(true);
+						}
 						const { value } = data;
 						await props.setInstallEnabled(props.integration, value);
 						setInstallEnabled(value);
@@ -160,6 +164,10 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'setConfig': {
+						if (!ready) {
+							ref.current.style.display = '';
+							setReady(true);
+						}
 						const { value } = data;
 						props.setConfig(props.integration, value);
 						if (JSON.stringify(currentConfig.current) !== JSON.stringify(value)) {
@@ -173,6 +181,10 @@ const Installer = (props: InstallerProps) => {
 						break;
 					}
 					case 'setAppOAuthURL': {
+						if (!ready) {
+							ref.current.style.display = '';
+							setReady(true);
+						}
 						const { url } = data;
 						oauthURL.current = url;
 						break;
@@ -421,7 +433,7 @@ const Installer = (props: InstallerProps) => {
 				handleInstall={handleInstall}
 				handleChangeAuth={handleAuthChange}
 			/>
-			{!ready && <Loader screen />}
+			{!ready && <Loader centered />}
 			<Frame
 				ref={ref}
 				name={props.integration.name}
