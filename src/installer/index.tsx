@@ -9,7 +9,7 @@ import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, 
 import { Config } from '../config';
 import styles from './styles.less';
 
-const debug = /(\.edge\.pinpoint\.com|\.ppoint\.io|\.pinpt\.vercel\.app)/.test(document.location.origin);
+const debug = typeof(document) === 'object' ? /(\.edge\.pinpoint\.com|\.ppoint\.io|\.pinpt\.vercel\.app)/.test(document.location.origin) : false;
 
 type Maybe<T> = T | undefined | null;
 
@@ -23,6 +23,8 @@ export interface InstallerProps {
 	authorization?: Maybe<IAppAuthorization>;
 	session?: Maybe<ISession>;
 	upgradeRequired?: Maybe<IUpgradeRequired>;
+	hideHeader?: boolean;
+	location?: Maybe<IInstalledLocation>;
 	setInstallEnabled: (integration: Integration, val: boolean) => Promise<void>;
 	getConfig: (integration: Integration) => Promise<Config>;
 	setConfig: (integration: Integration, config: Config) => Promise<void>;
@@ -109,6 +111,7 @@ const Installer = (props: InstallerProps) => {
 				processingDetail: props.processingDetail,
 				selfManagedAgent: props.selfManagedAgent,
 				upgradeRequired: props.upgradeRequired,
+				location: props.location,
 				session: props.session,
 			}, '*');
 			loaded.current = true;
@@ -417,22 +420,24 @@ const Installer = (props: InstallerProps) => {
 	const authName = props.authorization?.authorizer?.name;
 	return (
 		<div className={[styles.Wrapper, props.className].join(' ')}>
-			<Header
-				name={props.integration.name}
-				tags={props.integration.tags}
-				description={props.integration.description}
-				installed={isInstalled}
-				authorized={authDate > 0}
-				authDate={authDate}
-				authName={authName}
-				enabled={installEnabled}
-				icon={props.integration.icon}
-				publisher={props.integration.publisher}
-				hasError={props.integration.errored}
-				errorMessage={props.integration.errorMessage}
-				handleInstall={handleInstall}
-				handleChangeAuth={handleAuthChange}
-			/>
+			{!props.hideHeader && (
+				<Header
+					name={props.integration.name}
+					tags={props.integration.tags}
+					description={props.integration.description}
+					installed={isInstalled}
+					authorized={authDate > 0}
+					authDate={authDate}
+					authName={authName}
+					enabled={installEnabled}
+					icon={props.integration.icon}
+					publisher={props.integration.publisher}
+					hasError={props.integration.errored}
+					errorMessage={props.integration.errorMessage}
+					handleInstall={handleInstall}
+					handleChangeAuth={handleAuthChange}
+				/>
+			)}
 			{!ready && <Loader centered />}
 			<Frame
 				ref={ref}

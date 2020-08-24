@@ -126,6 +126,8 @@ export interface IAppContext {
 	currentURL: string;
 	// config is the current integation config is already installed or empty if a new integration
 	config: Config;
+	// location is already set for the integration
+	location?: Maybe<IInstalledLocation>;
 	// authorization is passed if the current integration has an preauthorized authorization as part of the Pinpoint setup matching the refType of the integration
 	authorization?: Maybe<IAppAuthorization>;
 	// detail is the processing detail about setup and processing state of the integration

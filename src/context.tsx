@@ -33,6 +33,7 @@ export const AppContextProvider = ({
 	const [processingDetail, setProcessingDetail] = useState<IProcessingDetail>();
 	const [selfManagedAgent, setSelfManagedAgent] = useState<ISelfManagedAgent>();
 	const [upgradeRequired, setUpgradeRequired] = useState<IUpgradeRequired>();
+	const [location, setLocation] = useState<IInstalledLocation>();
 	const [session, setSession] = useState<ISession>();
 	const redirectPromise = useRef<any[]>();
 	const redirectOAuthPromise = useRef<any[]>();
@@ -152,6 +153,7 @@ export const AppContextProvider = ({
 							processingDetail: _processingDetail,
 							selfManagedAgent: _selfManagedAgent,
 							upgradeRequired: _upgradeRequired,
+							location: _location,
 							session: _session,
 						} = data;
 						setID(_id);
@@ -164,6 +166,7 @@ export const AppContextProvider = ({
 						setProcessingDetail(_processingDetail);
 						setSelfManagedAgent(_selfManagedAgent);
 						setUpgradeRequired(_upgradeRequired);
+						setLocation(_location);
 						setSession(_session);
 						setLoading(false);
 						window.parent.postMessage({
@@ -501,6 +504,7 @@ export const AppContextProvider = ({
 				setRedirectTo,
 				currentURL,
 				installed,
+				location,
 				config,
 				getRedirectURL,
 				getAppOAuthURL,
