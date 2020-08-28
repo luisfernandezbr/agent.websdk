@@ -1,6 +1,6 @@
 {
   "name": "@pinpt/agent.websdk",
-  "version": "1.0.57",
+  "version": "1.0.58",
   "description": "Pinpoint Agent WebSDK",
   "main": "dist/index.js",
   "files": [
@@ -24,10 +24,7 @@
     "rollup-plugin-postcss": "^3.1.2",
     "typescript": "^3.9.5"
   },
-  "dependencies": {
-    "@pinpt/uic.next": "^1.0.111"
-  },
   "peerDependencies": {
-    "@pinpt/uic.next": "1.0.111"
+    "@pinpt/uic.next": "1.0.115"
   }
 }
