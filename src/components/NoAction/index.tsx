@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { Button, Dialog } from '@pinpt/uic.next';
+import React from 'react';
 import styles from './styles.less';
 
 export const NoAction = () => {
@@ -8,7 +7,7 @@ export const NoAction = () => {
 			className={styles.Wrapper}
 		>
 			<h1>
-				👍
+				<span role="img" aria-label="thumbs up">👍</span>
 			</h1>
 			<h2>
 				You're all set

@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Banner, Button, Icon, Tooltip } from '@pinpt/uic.next';
+import Banner from '@pinpt/uic.next/Banner';
+import Button from '@pinpt/uic.next/Button';
+import Icon from '@pinpt/uic.next/Icon';
+import Tooltip from '@pinpt/uic.next/Tooltip';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import styles from './styles.less';
 import { useIntegration } from '../../useIntegration';
 import useDebounce from '../../useDebounce';
@@ -230,7 +234,7 @@ export const Form = ({
 							{form?.url?.display || 'Instance URL'}
 							<span>
 								<Tooltip content={form?.url?.help || <>The URL to use for connecting to your instance. The Agent must be able to reach this URL from the network location it will be installed.</>}>
-									<Icon icon="info-circle" />
+									<Icon icon={faInfoCircle} />
 								</Tooltip>
 							</span>
 						</label>
@@ -245,7 +249,7 @@ export const Form = ({
 									{form?.basic?.username?.display || 'Username'}
 										<span>
 											<Tooltip content={form?.basic?.username?.help || <>The Username to use for connecting to your instance.</>}>
-												<Icon icon="info-circle" />
+												<Icon icon={faInfoCircle} />
 											</Tooltip>
 										</span>
 									</label>
@@ -257,7 +261,7 @@ export const Form = ({
 										{form?.basic?.password?.display || 'Password'}
 										<span>
 											<Tooltip content={form?.basic?.password?.help || <>The Password to use for connecting to your instance.</>}>
-												<Icon icon="info-circle" />
+												<Icon icon={faInfoCircle} />
 											</Tooltip>
 										</span>
 									</label>
@@ -270,7 +274,7 @@ export const Form = ({
 										{form?.api?.apikey?.display || 'API Key'}
 										<span>
 											<Tooltip content={form?.api?.apikey?.help || <>The APIKey which is used to connect to your instance.</>}>
-												<Icon icon="info-circle" />
+												<Icon icon={faInfoCircle} />
 											</Tooltip>
 										</span>
 									</label>

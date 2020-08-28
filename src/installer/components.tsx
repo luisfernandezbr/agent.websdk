@@ -1,6 +1,10 @@
 import React from 'react';
 import moment from 'moment';
-import { Banner, Button, Icon, Tooltip } from '@pinpt/uic.next';
+import Banner from '@pinpt/uic.next/Banner';
+import Button from '@pinpt/uic.next/Button';
+import Icon from '@pinpt/uic.next/Icon';
+import Tooltip from '@pinpt/uic.next/Tooltip';
+import { faKey, faTrash, faCheck, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { Publisher } from './types';
 import styles from './styles.less';
 
@@ -80,7 +84,7 @@ export const Header = (props: HeaderProps) => {
 								weight={300}
 							>
 								<>
-									<Icon icon={['fas', 'key']} />
+									<Icon icon={faKey} />
 									Change Credentials
 								</>
 							</Button>
@@ -95,7 +99,7 @@ export const Header = (props: HeaderProps) => {
 					className={styles.Button}
 				>
 					<>
-						<Icon icon={['fas', 'trash']} />
+						<Icon icon={faTrash} />
 						Uninstall
 					</>
 				</Button>
@@ -110,7 +114,7 @@ export const Header = (props: HeaderProps) => {
 							className={styles.Button}
 						>
 							<>
-								<Icon icon={['fas', 'check']} />
+								<Icon icon={faCheck} />
 								Install
 							</>
 						</Button>
@@ -123,7 +127,7 @@ export const Header = (props: HeaderProps) => {
 					<div className={styles.Row}>
 						<Banner error className={styles.Error}>
 							<>
-								<Icon icon={['fas', 'exclamation-triangle']} />
+								<Icon icon={faExclamationTriangle} />
 								{props.errorMessage}
 							</>
 						</Banner>

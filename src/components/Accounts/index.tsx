@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useCallbackOne as useCallback } from 'use-memo-one';
-import { Button, ListPanel, Icon, Tooltip, Theme } from '@pinpt/uic.next';
+import Button from '@pinpt/uic.next/Button';
+import ListPanel from '@pinpt/uic.next/ListPanel';
+import Icon from '@pinpt/uic.next/Icon';
+import Tooltip from '@pinpt/uic.next/Tooltip';
+import Theme from '@pinpt/uic.next/Theme';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useIntegration } from '../../useIntegration';
 import { AskDialog } from '../AskDialog';
 import { Config, ConfigAccount } from '../../config';
@@ -74,7 +79,7 @@ const buildAccountRow = (entity: string, account: Account, config: Config, onCli
 								</>
 							)}
 						>
-							<Icon icon={['fas', 'exclamation-triangle']} color={Theme.Red500} />
+							<Icon icon={faExclamationTriangle} color={Theme.Red500} />
 						</Tooltip>
 					)
 				}

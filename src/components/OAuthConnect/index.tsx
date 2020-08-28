@@ -1,5 +1,7 @@
 import React from 'react';
-import { Button, Icon } from '@pinpt/uic.next';
+import Button from '@pinpt/uic.next/Button';
+import Icon from '@pinpt/uic.next/Icon';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { useIntegration } from '../../useIntegration';
 import { OAuthVersion } from '../../types';
 import styles from './styles.less';
@@ -61,7 +63,7 @@ export const OAuthConnect = ({ name, reauth, version, baseuri, preamble, action 
 
 				<Button color="Green" weight={500} onClick={onClick}>
 					<>
-						<Icon icon={['fas', 'sign-in-alt']} />
+						<Icon icon={faSignInAlt} />
 						{action}
 					</>
 				</Button>

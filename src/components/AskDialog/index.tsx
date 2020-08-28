@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { Button, Dialog } from '@pinpt/uic.next';
+import Button from '@pinpt/uic.next/Button';
+import Dialog from '@pinpt/uic.next/Dialog';
 import styles from './styles.less';
 
 interface AskDialogProps {

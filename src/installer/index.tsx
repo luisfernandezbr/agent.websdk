@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Dialog, Icon, Loader } from '@pinpt/uic.next';
+import Button from '@pinpt/uic.next/Button';
+import Dialog from '@pinpt/uic.next/Dialog';
+import Icon from '@pinpt/uic.next/Icon';
+import Loader from '@pinpt/uic.next/Loader';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useCallbackOne as useCallback } from 'use-memo-one';
 import { Header } from './components';
 import Integration from './types';
@@ -408,7 +412,7 @@ const Installer = (props: InstallerProps) => {
 					<Button color="Mono" weight={500} onClick={dialogCancel}>Cancel</Button>
 					<Button color="Red" weight={500} onClick={dialogSubmit}>
 						<>
-							<Icon icon="trash" />
+							<Icon icon={faTrash} />
 							Delete Account
 						</>
 					</Button>
