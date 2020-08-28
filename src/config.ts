@@ -42,18 +42,22 @@ export interface ConfigAccount {
 	id: string;
 	type: 'ORG' | 'USER';
 	public: boolean;
+	name?: string;
+	description?: string;
+	avatarUrl?: string;
+	totalCount?: number;
 }
 
-type Bag = {[key: string]: any};
+type Bag = { [key: string]: any };
 
 export interface Config extends Bag {
 	integration_type?: IntegrationType;
-	exclusions?: Maybe<{[id: string]: string}>;
-	inclusions?: Maybe<{[id: string]: string}>;
+	exclusions?: Maybe<{ [id: string]: string }>;
+	inclusions?: Maybe<{ [id: string]: string }>;
 	oauth1_auth?: Maybe<OAuth1Auth>;
 	oauth2_auth?: Maybe<OAuth2Auth>;
 	basic_auth?: Maybe<BasicAuth>;
 	apikey_auth?: Maybe<APIKeyAuth>;
 	authorizer?: Maybe<Authorizer>;
-	accounts?: Maybe<{[id: string]: ConfigAccount}>;
+	accounts?: Maybe<{ [id: string]: ConfigAccount }>;
 }

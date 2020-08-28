@@ -3,17 +3,13 @@ import { useCallbackOne as useCallback } from 'use-memo-one';
 import { Button, ListPanel, Icon, Tooltip, Theme } from '@pinpt/uic.next';
 import { useIntegration } from '../../useIntegration';
 import { AskDialog } from '../AskDialog';
-import { Config } from '../../config';
+import { Config, ConfigAccount } from '../../config';
 import styles from './styles.less';
 
-export interface Account {
-	id: string;
+export interface Account extends ConfigAccount {
 	name: string;
 	description: string;
-	avatarUrl?: string;
 	totalCount: number;
-	type: 'USER' | 'ORG';
-	public: boolean;
 }
 
 interface AccountsTableProps {
