@@ -46,6 +46,7 @@ export interface ConfigAccount {
 	description?: string;
 	avatarUrl?: string;
 	totalCount?: number;
+	selected?: boolean;
 }
 
 type Bag = { [key: string]: any };

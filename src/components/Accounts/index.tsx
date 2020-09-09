@@ -15,6 +15,7 @@ export interface Account extends ConfigAccount {
 	name: string;
 	description: string;
 	totalCount: number;
+	selected: boolean;
 }
 
 interface AccountsTableProps {
@@ -35,14 +36,11 @@ const ucFirst = (str: string) => {
 
 const AccountSelector = ({account, config}: {account: Account, config: Config}) => {
 	const { setConfig, setInstallEnabled, installed } = useIntegration();
-	const [selected, setSelected] = useState<boolean>(!!config.accounts?.[account.id]);
+	const [selected, setSelected] = useState<boolean>(!!config.accounts?.[account.id].selected);
 	const onChange = useCallback((val: boolean) => {
+		config.accounts[account.id].selected = val
 		setSelected(val);
-		if (val) {
 			config.accounts[account.id] = account;
-		} else {
-			delete config.accounts[account.id];
-		}
 		setInstallEnabled(installed ? true : Object.keys(config.accounts).length > 0);
 		setConfig(config);
 	}, [config, installed]);
