@@ -36,13 +36,14 @@ const ucFirst = (str: string) => {
 
 const AccountSelector = ({account, config}: {account: Account, config: Config}) => {
 	const { setConfig, setInstallEnabled, installed } = useIntegration();
-	const [selected, setSelected] = useState<boolean>(!!config.accounts?.[account.id].selected);
+	const [selected, setSelected] = useState<boolean>(!!config.accounts?.[account.id]?.selected);
 	const onChange = useCallback((val: boolean) => {
-		config.accounts[account.id].selected = val
-		setSelected(val);
-			config.accounts[account.id] = account;
-		setInstallEnabled(installed ? true : Object.keys(config.accounts).length > 0);
-		setConfig(config);
+		if ( config.accounts && config.accounts[account.id] ) {
+			config.accounts[account.id].selected = val
+			setSelected(val);
+			setInstallEnabled(installed ? true : Object.keys(config.accounts).length > 0);
+			setConfig(config);
+		}
 	}, [config, installed]);
 
 	return (
