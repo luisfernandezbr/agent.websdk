@@ -1,5 +1,6 @@
 export * from './useIntegration';
 export * from './types';
+export * from './mutation';
 export { default as AppContext } from './context';
 export { default as Installer, Integration } from './Installer';
 export { default as SimulatorInstaller } from './Installer/simulator';
