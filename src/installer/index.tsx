@@ -13,7 +13,7 @@ import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, 
 import { Config } from '../config';
 import styles from './styles.less';
 
-const debug = typeof(document) === 'object' ? /(\.edge\.pinpoint\.com|\.ppoint\.io|\.pinpt\.vercel\.app)/.test(document.location.origin) : false;
+const debug = typeof (document) === 'object' ? /(\.edge\.pinpoint\.com|\.ppoint\.io|\.pinpt\.vercel\.app)/.test(document.location.origin) : false;
 
 type Maybe<T> = T | undefined | null;
 
@@ -220,8 +220,10 @@ const Installer = (props: InstallerProps) => {
 									url += `/${props.id}/${encodeURIComponent(baseuri)}`;
 								}
 							}
+							const user_id = props.session.user.id;
+							const customer_id = props.session.customer.id;
 							const sep = url.indexOf('?') > 0 ? '&' : '?';
-							url += `${sep}redirect_to=${encodeURIComponent(redirectTo)}`
+							url += `${sep}redirect_to=${encodeURIComponent(redirectTo)}&customer_id=${customer_id}&user_id=${user_id}`;
 							deliverMessageToFrame('getAppOAuthURL', { url });
 						} else {
 							if (debug) console.log('Installer:: getAppOAuthURL ignored because iframe is being unloaded');
