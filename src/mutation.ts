@@ -30,15 +30,15 @@ export interface NameID {
 }
 
 export interface WorkIssueCreateMutation {
-	Title: string;
-	Description: string;
-	AssigneeRefID?: string;
-	Priority?: NameID;
-	Type?: NameID;
-	ProjectRefID: string;
-	Epic?: NameID;
-	ParentRefID?: string;
-	Labels: string[];
+	title: string;
+	description: string;
+	assignee_ref_rd?: string;
+	priority?: NameID;
+	type?: NameID;
+	project_ref_id: string;
+	epic?: NameID;
+	parent_ref_id?: string;
+	labels: string[];
 }
 
 export interface WorkIssueUpdateMutation {
@@ -49,7 +49,7 @@ export interface WorkIssueUpdateMutation {
 		priority?: NameID;
 		resolution?: NameID;
 		epic?: NameID;
-		assigneeRefID?: string;
+		assignee_ref_id?: string;
 	};
 	unset?: {
 		epic?: boolean;
