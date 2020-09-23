@@ -1,6 +1,6 @@
 {
   "name": "@pinpt/agent.websdk",
-  "version": "1.0.62",
+  "version": "1.0.63",
   "description": "Pinpoint Agent WebSDK",
   "main": "dist/index.js",
   "files": [
