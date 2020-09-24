@@ -56,3 +56,33 @@ export interface WorkIssueUpdateMutation {
 		assignee?: boolean;
 	};
 }
+
+// this could be imported from datamodel
+export type WorkSprintStatus = 'ACTIVE' | 'FUTURE' | 'CLOSED';
+
+// WorkSprintCreateMutation is an create mutation for a sprint
+export interface WorkSprintCreateMutation {
+	name: string;
+	goal?: string;
+	status: WorkSprintStatus;
+	start_date: string; // rfc3339 date
+	end_date: string; // rfc3339 date
+	issue_ref_ids: string[];
+	project_ref_id?: string;
+	board_ref_id: string[];
+}
+
+// WorkSprintUpdateMutation is an update mutation for a sprint
+export interface WorkSprintUpdateMutation {
+	Set: {
+		name?: string;
+		goal?: string;
+		status: WorkSprintStatus;
+		start_date?: string; // rfc3339 date
+		end_date?: string; // rfc3339 date
+		issue_ref_ids: string[];
+	}
+	Unset: {
+		issue_ref_ids: string[];
+	}
+}
