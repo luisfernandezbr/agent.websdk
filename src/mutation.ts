@@ -14,7 +14,7 @@ interface commonDate {
 }
 
 export interface MutationUser {
-	ref_id: string; // id is the ref_id of the user
+	ref_id: string;
 	basic_auth?: IAppBasicAuth;
 	oauth1_auth?: IOAuth1Auth;
 	oauth2_auth?: IOAuth2Auth;
@@ -23,10 +23,10 @@ export interface MutationUser {
 
 // MutationData is to be stringified and put in the body of agent.Mutation
 export interface MutationData {
-	ref_id: string; // id is the ref_id of the object
+	ref_id: string;
 	model: string;
 	action: 'create'|'update'|'delete';
-	payload: WorkIssueUpdateMutation | WorkIssueCreateMutation; // TODO(robin): port remaining mutations
+	payload: WorkIssueUpdateMutation | WorkIssueCreateMutation | WorkSprintCreateMutation | WorkSprintUpdateMutation; // TODO(robin): port remaining mutations
 	user: MutationUser;
 }
 
