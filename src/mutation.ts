@@ -7,8 +7,14 @@ import {
 
 // NOTE(robin): these types are projections from https://github.com/pinpt/agent.next/blob/master/sdk/mutation.go
 
+interface commonDate {
+	epoch: number;
+	offset: number;
+	rfc3339: string;
+}
+
 export interface MutationUser {
-	id: string; // id is the ref_id of the user
+	ref_id: string;
 	basic_auth?: IAppBasicAuth;
 	oauth1_auth?: IOAuth1Auth;
 	oauth2_auth?: IOAuth2Auth;
@@ -17,26 +23,26 @@ export interface MutationUser {
 
 // MutationData is to be stringified and put in the body of agent.Mutation
 export interface MutationData {
-	id: string; // id is the ref_id of the object
+	ref_id: string;
 	model: string;
 	action: 'create'|'update'|'delete';
-	payload: WorkIssueUpdateMutation | WorkIssueCreateMutation; // TODO(robin): port remaining mutations
+	payload: WorkIssueUpdateMutation | WorkIssueCreateMutation | WorkSprintCreateMutation | WorkSprintUpdateMutation; // TODO(robin): port remaining mutations
 	user: MutationUser;
 }
 
-export interface NameID {
+export interface NameRefID {
 	name?: string;
-	id?: string;
+	ref_id?: string;
 }
 
 export interface WorkIssueCreateMutation {
 	title: string;
 	description: string;
 	assignee_ref_rd?: string;
-	priority?: NameID;
-	type?: NameID;
+	priority?: NameRefID;
+	type?: NameRefID;
 	project_ref_id: string;
-	epic?: NameID;
+	epic?: NameRefID;
 	parent_ref_id?: string;
 	labels: string[];
 }
@@ -44,11 +50,11 @@ export interface WorkIssueCreateMutation {
 export interface WorkIssueUpdateMutation {
 	set: {
 		title?: string;
-		transition?: NameID;
-		status?: NameID;
-		priority?: NameID;
-		resolution?: NameID;
-		epic?: NameID;
+		transition?: NameRefID;
+		status?: NameRefID;
+		priority?: NameRefID;
+		resolution?: NameRefID;
+		epic?: NameRefID;
 		assignee_ref_id?: string;
 	};
 	unset?: {
@@ -65,8 +71,8 @@ export interface WorkSprintCreateMutation {
 	name: string;
 	goal?: string;
 	status: WorkSprintStatus;
-	start_date: string; // rfc3339 date
-	end_date: string; // rfc3339 date
+	start_date: commonDate;
+	end_date: commonDate;
 	issue_ref_ids: string[];
 	project_ref_id?: string;
 	board_ref_id: string[];
@@ -78,8 +84,8 @@ export interface WorkSprintUpdateMutation {
 		name?: string;
 		goal?: string;
 		status: WorkSprintStatus;
-		start_date?: string; // rfc3339 date
-		end_date?: string; // rfc3339 date
+		start_date?: commonDate;
+		end_date?: commonDate;
 		issue_ref_ids: string[];
 	}
 	Unset: {
