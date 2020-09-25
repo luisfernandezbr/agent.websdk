@@ -80,7 +80,7 @@ export interface WorkSprintCreateMutation {
 
 // WorkSprintUpdateMutation is an update mutation for a sprint
 export interface WorkSprintUpdateMutation {
-	Set: {
+	set: {
 		name?: string;
 		goal?: string;
 		status: WorkSprintStatus;
@@ -88,7 +88,7 @@ export interface WorkSprintUpdateMutation {
 		end_date?: commonDate;
 		issue_ref_ids: string[];
 	}
-	Unset: {
+	unset: {
 		issue_ref_ids: string[];
 	}
 }
