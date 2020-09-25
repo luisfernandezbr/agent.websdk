@@ -75,7 +75,7 @@ export interface WorkSprintCreateMutation {
 	end_date: commonDate;
 	issue_ref_ids: string[];
 	project_ref_id?: string;
-	board_ref_id: string[];
+	board_ref_ids: string[];
 }
 
 // WorkSprintUpdateMutation is an update mutation for a sprint
