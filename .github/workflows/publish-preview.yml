@@ -1,8 +1,8 @@
-name: npm publish production
+name: npm publish master
 
 on:
   push:
-    branches: 
+    branches:
       - master
 
 jobs:
@@ -12,13 +12,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
-
       - name: Set up Node.js for NPM
         uses: actions/setup-node@v1
         with:
           registry-url: "https://registry.npmjs.org"
-          scope: '@pinpt'
-          node-version: '10.x'
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -32,12 +29,10 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-:
-            
       - name: Install dependencies
-        run: npm install
-          
+        run: npm install --ignore-scripts
+
       - name: Publish package to NPM
         run: npm publish --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-

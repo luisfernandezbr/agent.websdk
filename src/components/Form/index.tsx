@@ -130,12 +130,11 @@ export const Form = ({
 				setError(err.message);
 			});
 		} else if (urlValidator) {
-			let urlValid = false;
-			try {
-				if (url) {
+			let urlValid = form?.url?.disabled;
+			if (!urlValid && url) {
+				try {
 					urlValid = urlValidator(url);
-				}
-			} catch (ex) {
+				} catch(e) { }
 			}
 			switch (type) {
 				case FormType.BASIC: {
