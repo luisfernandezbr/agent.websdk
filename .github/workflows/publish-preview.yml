@@ -18,7 +18,7 @@ jobs:
         with:
           registry-url: "https://registry.npmjs.org"
           scope: '@pinpt'
-          node-version: '10.15.x'
+          node-version: '10.x'
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -34,7 +34,7 @@ jobs:
             ${{ runner.os }}-:
             
       - name: Install dependencies
-        run: npm install --ignore-scripts
+        run: npm install
         env:
           UIC_NPM_TOKEN: ${{ secrets.UIC_NPM_TOKEN }}
           
