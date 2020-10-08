@@ -30,20 +30,20 @@ interface FormProps {
 		basic?: {
 			// the username prompt
 			username?: {
-				display: string | React.ReactElement;
-				help: string | React.ReactElement;
+				display?: string | React.ReactElement;
+				help?: string | React.ReactElement;
 			};
 			// the password prompt
 			password?: {
-				display: string | React.ReactElement;
-				help: string | React.ReactElement;
+				display?: string | React.ReactElement;
+				help?: string | React.ReactElement;
 			};
 		},
 		api?: {
 			// the apikey prompt
 			apikey?: {
-				display: string | React.ReactElement;
-				help: string | React.ReactElement;
+				display?: string | React.ReactElement;
+				help?: string | React.ReactElement;
 			};
 		}
 	};
