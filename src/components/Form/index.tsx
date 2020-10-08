@@ -23,8 +23,9 @@ interface FormProps {
 	form?: {
 		// the url prompt
 		url?: {
-			display: string | React.ReactElement;
-			help: string | React.ReactElement;
+			disabled: boolean
+			display?: string | React.ReactElement;
+			help?: string | React.ReactElement;
 		};
 		basic?: {
 			// the username prompt
@@ -227,20 +228,23 @@ export const Form = ({
 				</p>
 
 				{ error && <Banner error>{error}</Banner> }
-
 				<div className={styles.Form}>
-					<div>
-						<label htmlFor="Form.URL">
-							{form?.url?.display || 'Instance URL'}
-							<span>
-								<Tooltip content={form?.url?.help || <>The URL to use for connecting to your instance. The Agent must be able to reach this URL from the network location it will be installed.</>}>
-									<Icon icon={faInfoCircle} />
-								</Tooltip>
-							</span>
-						</label>
-						<input type="text" name="Form.URL" readOnly={readonly} className={styles.Wide} onChange={(e: any) => setUrl(e.target.value.trim())} onBlur={(e: any) => onBlur?.('url', e)} onFocus={(e: any) => onFocus?.('url', e)} />
-					</div>
-
+					{ form?.url?.disabled ? (<></>) : (
+						<>
+						<div>
+							<label htmlFor="Form.URL">
+								{form?.url?.display || 'Instance URL'}
+								<span>
+									<Tooltip content={form?.url?.help || <>The URL to use for connecting to your instance. The Agent must be able to reach this URL from the network location it will be installed.</>}>
+										<Icon icon={faInfoCircle} />
+									</Tooltip>
+								</span>
+							</label>
+							<input type="text" name="Form.URL" readOnly={readonly} className={styles.Wide} onChange={(e: any) => setUrl(e.target.value.trim())} onBlur={(e: any) => onBlur?.('url', e)} onFocus={(e: any) => onFocus?.('url', e)} />
+						</div>
+						</>
+						) 
+					}
 					{
 						type === FormType.BASIC ? (
 							<>
