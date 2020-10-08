@@ -35,12 +35,9 @@ jobs:
             
       - name: Install dependencies
         run: npm install
-        env:
-          UIC_NPM_TOKEN: ${{ secrets.UIC_NPM_TOKEN }}
           
       - name: Publish package to NPM
         run: npm publish --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          UIC_NPM_TOKEN: ${{ secrets.UIC_NPM_TOKEN }}
 
