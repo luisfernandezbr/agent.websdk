@@ -1,0 +1,56 @@
+name: npm publish preview
+
+on: pull_request
+
+jobs:
+  publish-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Set up Node.js for NPM
+        uses: actions/setup-node@v1
+        with:
+          registry-url: "https://registry.npmjs.org"
+          scope: '@pinpt'
+          node-version: '10.x'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-:
+            
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+        env:
+          UIC_NPM_TOKEN: ${{ secrets.UIC_NPM_TOKEN }}
+
+      - name: Version
+        run: npm version prerelease --preid=`git rev-parse --short HEAD` --git-tag-version false | cut -c2- > version.txt
+
+      - name: Publish package to NPM
+        run: npm publish --access public --tag dev
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          UIC_NPM_TOKEN: ${{ secrets.UIC_NPM_TOKEN }}
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+
+      - name: comment PR
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.PP_GITHUB_TOKEN }}
+        with:
+          msg: "Prerelease successfully deployed as version ${{ steps.package-version.outputs.current-version }} 🎉. To install, run `npm i @pinpt/uic.next@${{ steps.package-version.outputs.current-version }}`."
+          check_for_duplicate_msg: false  # OPTIONAL 
