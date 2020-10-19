@@ -223,7 +223,7 @@ const Installer = (props: InstallerProps) => {
 							const user_id = props.session.user.id;
 							const customer_id = props.session.customer.id;
 							const sep = url.indexOf('?') > 0 ? '&' : '?';
-							url += `${sep}redirect_to=${encodeURIComponent(redirectTo)}&customer_id=${customer_id}&user_id=${user_id}&mapping=true`;
+							url += `${sep}redirect_to=${encodeURIComponent(redirectTo)}&customer_id=${customer_id}&user_id=${user_id}&integration_instance_id=${props.id}&mapping=true`;
 							deliverMessageToFrame('getAppOAuthURL', { url });
 						} else {
 							if (debug) console.log('Installer:: getAppOAuthURL ignored because iframe is being unloaded');
