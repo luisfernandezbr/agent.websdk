@@ -1,9 +1,11 @@
-import React from 'react';
-import Integration from './types';
-import { IProcessingDetail, ISelfManagedAgent, ISession, IUpgradeRequired } from '../types';
-import Installer from './index';
-import styles from './styles.less';
+import React, { useCallback, useEffect, useState } from 'react';
+import Integration from '../types';
+import { IProcessingDetail, ISelfManagedAgent, ISession, IUpgradeRequired, ToastOptions } from '../../types';
+import Installer from '../index';
+import styles from './../styles.less';
 import { Config } from 'index';
+import { default as Toast } from './toast/index'
+import { useToasts ,ToastProvider, Options} from 'react-toast-notifications';
 
 type Maybe<T> = T | undefined | null;
 
@@ -76,6 +78,34 @@ const getEnv = () => {
 	}
 };
 
+// export default React.memo((props: Props) => {
+
+const ToastContainer = ({toastOpts, setToastOpts}:{toastOpts:any, setToastOpts:(opts:any)=>void}) => {
+	const { addToast } = useToasts();
+	const [launched, setLaunched] = useState(false);
+	
+	useEffect(()=>{
+		if (launched) {
+			return;
+		}
+		if (toastOpts) {
+			setToastOpts(null);
+			setLaunched(true);
+			const opts:ToastOptions = toastOpts.options;
+			addToast(toastOpts.message, {
+				appearance: opts.appearance,
+				autoDismiss: opts.autoDismiss,
+				onDismiss: (id: string) => {
+					if (opts.onDismiss) {
+						opts.onDismiss(id);
+					}
+					setLaunched(false);
+				}
+			});
+		}
+	}, [toastOpts, launched])
+	return <span />
+}
 const SimulatorInstaller = ({
 	id = '1234567890',
 	integration,
@@ -109,6 +139,8 @@ const SimulatorInstaller = ({
 	getPrivateKey?: Maybe<() => Promise<string>>,
 }) => {
 	integration.installed = window.localStorage.getItem(`installer.${integration.refType}`) === 'true';
+
+	const [toastOpts, setToastOpts] = useState<any>()
 	var conf: Config = JSON.parse(window.localStorage.getItem(`installer.config.${integration.refType}`))?.oauth2_auth || {};
 	var auth = {};
 	if (conf.oauth2_auth) {
@@ -120,29 +152,44 @@ const SimulatorInstaller = ({
 	} else if (conf.apikey_auth) {
 		auth = conf.apikey_auth
 	}
+	// the ToastContainer is a workaround only for the simulator. The toast only works inside a ToastProvider,
+	// no need to change the webapp since it has it at the root of the hierarchy
+	const addToast = (message:string, options:ToastOptions) => {
+		setToastOpts({message, options})
+	}
 	return (
+		<>
+		<ToastProvider
+			autoDismiss
+			placement="bottom-right"
+			components={{ Toast }}
+		>
+		<ToastContainer toastOpts={toastOpts} setToastOpts={setToastOpts}></ToastContainer>
 		<Installer
-			id={id}
-			className={styles.Simulator}
-			integration={integration}
-			processingDetail={processingDetail}
-			upgradeRequired={upgradeRequired}
-			authorization={auth}
-			setInstallEnabled={setInstallEnabled}
-			getConfig={getConfig}
-			setConfig={setConfig}
-			onRemove={onRemove}
-			onInstall={onInstall}
-			onAuth1Connect={onAuth1Connect}
-			onValidate={onValidate ?? onValidateDefault}
-			setSelfManagedAgentRequired={setSelfManagedAgentRequired}
-			selfManagedAgent={selfManagedAgent}
-			session={session}
-			setPrivateKey={setPrivateKey}
-			getPrivateKey={getPrivateKey}
-			setInstallLocation={setInstallLocation}
-			setUpgradeComplete={setUpgradeComplete}
-		/>
+					id={id}
+					className={styles.Simulator}
+					integration={integration}
+					processingDetail={processingDetail}
+					upgradeRequired={upgradeRequired}
+					authorization={auth}
+					setInstallEnabled={setInstallEnabled}
+					getConfig={getConfig}
+					setConfig={setConfig}
+					onRemove={onRemove}
+					onInstall={onInstall}
+					onAuth1Connect={onAuth1Connect}
+					onValidate={onValidate ?? onValidateDefault}
+					setSelfManagedAgentRequired={setSelfManagedAgentRequired}
+					selfManagedAgent={selfManagedAgent}
+					session={session}
+					setPrivateKey={setPrivateKey}
+					getPrivateKey={getPrivateKey}
+					setInstallLocation={setInstallLocation}
+					setUpgradeComplete={setUpgradeComplete}
+					addToast={addToast}
+				/>
+			</ToastProvider>
+		</>
 	);
 };
 

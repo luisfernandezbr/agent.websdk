@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useCallbackOne as useCallback } from 'use-memo-one';
-import { IAppContext, IAppAuthorization, IProcessingDetail, OAuthVersion, FetchHeaders, FetchMethod, IFetchResult, ISelfManagedAgent, ISession, IInstalledLocation, IUpgradeRequired } from './types';
+import { IAppContext, IAppAuthorization, IProcessingDetail, OAuthVersion, FetchHeaders, FetchMethod, IFetchResult, ISelfManagedAgent, ISession, IInstalledLocation, IUpgradeRequired, ToastOptions } from './types';
 import { Config } from './config';
 
 type Maybe<T> = T | undefined | null;
@@ -47,6 +47,7 @@ export const AppContextProvider = ({
 	const setInstallLocationPromise = useRef<any[]>();
 	const getPrivateKeyPromise = useRef<any[]>();
 	const setUpgradeCompletePromise = useRef<any[]>();
+	const addToastPromise = useRef<any[]>();
 	
 	const setInstallEnabled = useCallback((value: boolean) => {
 		window.parent.postMessage({
@@ -495,6 +496,21 @@ export const AppContextProvider = ({
 		return promise;
 	}, [window.parent]);
 
+	const addToast = useCallback((message:string, options:ToastOptions) => {
+		const promise = new Promise<void>((resolve, reject) =>{
+			addToastPromise.current = [resolve, reject];
+			window.parent.postMessage({
+				command: "addToast",
+				source,
+				scope,
+				publisher,
+				refType,
+				message,
+				options
+			}, '*');
+		});
+		return promise;
+	}, [window.parent])
 	return (
 		<AppContext.Provider
 			value={{
@@ -528,6 +544,7 @@ export const AppContextProvider = ({
 				getPrivateKey,
 				setInstallLocation,
 				setUpgradeComplete,
+				addToast,
 			}}
 		>
 			{children}

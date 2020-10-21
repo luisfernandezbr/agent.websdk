@@ -9,9 +9,10 @@ import { Header } from './components';
 import Integration from './types';
 import Graphql from '../graphql';
 export { default as Integration } from './types';
-import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, ISession, IInstalledLocation, IUpgradeRequired } from '../types';
+import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, ISession, IInstalledLocation, IUpgradeRequired, ToastOptions } from '../types';
 import { Config } from '../config';
 import styles from './styles.less';
+import { Message } from '@pinpt/uic.next';
 
 const debug = typeof (document) === 'object' ? /(\.edge\.pinpoint\.com|\.ppoint\.io|\.pinpt\.vercel\.app)/.test(document.location.origin) : false;
 
@@ -42,6 +43,7 @@ export interface InstallerProps {
 	getPrivateKey: (integration: Integration) => Promise<string | null>;
 	setInstallLocation: (integration: Integration, location: IInstalledLocation) => Promise<void>;
 	setUpgradeComplete: (integration: Integration) => Promise<void>;
+	addToast: (message:string, options:ToastOptions) => void;
 }
 
 const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any) => {
@@ -325,6 +327,15 @@ const Installer = (props: InstallerProps) => {
 						await props.setUpgradeComplete(props.integration);
 						if (ref.current) {
 							deliverMessageToFrame('setUpgradeComplete', {});
+						} else {
+							if (debug) console.log('Installer:: setUpgradeComplete ignored because iframe is being unloaded');
+						}
+						break;
+					}
+					case 'addToast': {
+						if (ref.current) {
+							const {message,options} = data;
+							props.addToast(message, options);
 						} else {
 							if (debug) console.log('Installer:: setUpgradeComplete ignored because iframe is being unloaded');
 						}

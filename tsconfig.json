@@ -6,7 +6,7 @@
     "module": "es6",
     "moduleResolution": "node",
     "jsx": "react",
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "outDir": "./dist",
     "target": "es2015",
     "sourceMap": true,

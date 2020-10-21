@@ -109,6 +109,12 @@ export interface IUpgradeRequired {
 	requested_date_ts?: number;
 }
 
+export interface ToastOptions {
+	appearance: 'error' | 'info' | 'success' | 'warning',
+    autoDismiss?: boolean;
+    onDismiss?: (id: string) => void;
+}
+
 export interface IAppContext {
 	// the id for the integration instance
 	id: string;
@@ -172,4 +178,6 @@ export interface IAppContext {
 	setInstallLocation: (location: IInstalledLocation) => Promise<void>;
 	// setUpgradeComplete should be called to indicate that the integration instance has been upgraded
 	setUpgradeComplete: () => Promise<void>;
+
+	addToast: (message:string, options:ToastOptions) => void;
 }
