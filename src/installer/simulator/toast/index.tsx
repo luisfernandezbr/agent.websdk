@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon } from '@pinpt/uic.next';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import styles from './styles.module.less';
+import { ToastProps } from 'react-toast-notifications';
 
 const states = {
 	entering: { transform: 'translate3d(120%, 0, 0) scale(1)' },
@@ -16,7 +17,7 @@ const Toast = ({
 	transitionDuration,
 	transitionState,
 	onDismiss,
-}) => {
+}:ToastProps) => {
 	let prefix: IconPrefix = 'far';
 	let iconName: IconName;
 	switch (appearance) {
@@ -46,7 +47,7 @@ const Toast = ({
 				transitionDuration: `${transitionDuration}ms`,
 				...states[transitionState]
 			}}
-			onClick={onDismiss}
+			onClick={() => onDismiss('') }
 			role="button"
 			tabIndex={-1}
 		>
