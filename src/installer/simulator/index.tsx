@@ -78,32 +78,29 @@ const getEnv = () => {
 	}
 };
 
-// export default React.memo((props: Props) => {
 
-const ToastContainer = ({toastOpts, setToastOpts}:{toastOpts:any, setToastOpts:(opts:any)=>void}) => {
+interface ToastParams {
+	message:string;
+	options:ToastOptions;
+}
+
+const ToastContainer = ({toastParams}:{toastParams:ToastParams}) => {
 	const { addToast } = useToasts();
-	const [launched, setLaunched] = useState(false);
 	
 	useEffect(()=>{
-		if (launched) {
-			return;
-		}
-		if (toastOpts) {
-			setToastOpts(null);
-			setLaunched(true);
-			const opts:ToastOptions = toastOpts.options;
-			addToast(toastOpts.message, {
+		if (toastParams) {
+			const opts:ToastOptions = toastParams.options;
+			addToast(toastParams.message, {
 				appearance: opts.appearance,
 				autoDismiss: opts.autoDismiss,
 				onDismiss: (id: string) => {
 					if (opts.onDismiss) {
 						opts.onDismiss(id);
 					}
-					setLaunched(false);
 				}
 			});
 		}
-	}, [toastOpts, launched])
+	}, [toastParams])
 	return <span />
 }
 const SimulatorInstaller = ({
@@ -140,7 +137,7 @@ const SimulatorInstaller = ({
 }) => {
 	integration.installed = window.localStorage.getItem(`installer.${integration.refType}`) === 'true';
 
-	const [toastOpts, setToastOpts] = useState<any>()
+	const [toastParams, setToastParams] = useState<ToastParams>()
 	var conf: Config = JSON.parse(window.localStorage.getItem(`installer.config.${integration.refType}`))?.oauth2_auth || {};
 	var auth = {};
 	if (conf.oauth2_auth) {
@@ -155,7 +152,7 @@ const SimulatorInstaller = ({
 	// the ToastContainer is a workaround only for the simulator. The toast only works inside a ToastProvider,
 	// no need to change the webapp since it has it at the root of the hierarchy
 	const addToast = (message:string, options:ToastOptions) => {
-		setToastOpts({message, options})
+		setToastParams({message, options})
 	}
 	return (
 		<>
@@ -164,7 +161,7 @@ const SimulatorInstaller = ({
 			placement="bottom-right"
 			components={{ Toast }}
 		>
-		<ToastContainer toastOpts={toastOpts} setToastOpts={setToastOpts}></ToastContainer>
+		<ToastContainer toastParams={toastParams}></ToastContainer>
 		<Installer
 					id={id}
 					className={styles.Simulator}

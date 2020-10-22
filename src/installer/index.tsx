@@ -337,7 +337,7 @@ const Installer = (props: InstallerProps) => {
 							const {message,options} = data;
 							props.addToast(message, options);
 						} else {
-							if (debug) console.log('Installer:: setUpgradeComplete ignored because iframe is being unloaded');
+							if (debug) console.log('Installer:: addToast ignored because iframe is being unloaded');
 						}
 						break;
 					}
