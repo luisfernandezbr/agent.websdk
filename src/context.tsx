@@ -48,7 +48,7 @@ export const AppContextProvider = ({
 	const getPrivateKeyPromise = useRef<any[]>();
 	const setUpgradeCompletePromise = useRef<any[]>();
 	const addToastPromise = useRef<any[]>();
-	
+
 	const setInstallEnabled = useCallback((value: boolean) => {
 		window.parent.postMessage({
 			source,
@@ -197,7 +197,7 @@ export const AppContextProvider = ({
 						currentConfig.current = config;
 						if (config && JSON.stringify(config) !== JSON.stringify(currentConfig.current)) {
 							_setConfig(config);
-						}	
+						}
 						break;
 					}
 					case 'getRedirectURL': {
@@ -496,8 +496,8 @@ export const AppContextProvider = ({
 		return promise;
 	}, [window.parent]);
 
-	const addToast = useCallback((message:string, options:ToastOptions) => {
-		const promise = new Promise<void>((resolve, reject) =>{
+	const addToast = useCallback((message: string, options: ToastOptions) => {
+		const promise = new Promise<void>((resolve, reject) => {
 			addToastPromise.current = [resolve, reject];
 			window.parent.postMessage({
 				command: "addToast",

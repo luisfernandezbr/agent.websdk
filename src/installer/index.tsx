@@ -43,7 +43,7 @@ export interface InstallerProps {
 	getPrivateKey: (integration: Integration) => Promise<string | null>;
 	setInstallLocation: (integration: Integration, location: IInstalledLocation) => Promise<void>;
 	setUpgradeComplete: (integration: Integration) => Promise<void>;
-	addToast: (message:string, options:ToastOptions) => void;
+	addToast: (message: string, options: ToastOptions) => void;
 }
 
 const Frame = React.memo(React.forwardRef(({ url, name, onLoad }: any, ref: any) => {
@@ -334,7 +334,7 @@ const Installer = (props: InstallerProps) => {
 					}
 					case 'addToast': {
 						if (ref.current) {
-							const {message,options} = data;
+							const { message, options } = data;
 							props.addToast(message, options);
 						} else {
 							if (debug) console.log('Installer:: addToast ignored because iframe is being unloaded');

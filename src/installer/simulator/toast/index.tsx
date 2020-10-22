@@ -17,7 +17,7 @@ const Toast = ({
 	transitionDuration,
 	transitionState,
 	onDismiss,
-}:ToastProps) => {
+}: ToastProps) => {
 	let prefix: IconPrefix = 'far';
 	let iconName: IconName;
 	switch (appearance) {
@@ -47,7 +47,7 @@ const Toast = ({
 				transitionDuration: `${transitionDuration}ms`,
 				...states[transitionState]
 			}}
-			onClick={() => onDismiss('') }
+			onClick={() => onDismiss('')}
 			role="button"
 			tabIndex={-1}
 		>
