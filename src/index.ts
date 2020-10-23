@@ -2,8 +2,8 @@ export * from './useIntegration';
 export * from './types';
 export * from './mutation';
 export { default as AppContext } from './context';
-export { default as Installer, Integration } from './Installer';
-export { default as SimulatorInstaller } from './Installer/simulator';
+export { default as Installer, Integration } from './installer';
+export { default as SimulatorInstaller } from './installer/simulator';
 export {
 	Account,
 	AccountsTable,
