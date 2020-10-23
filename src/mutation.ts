@@ -50,14 +50,14 @@ export interface WorkIssueCreateMutation {
 	fields: MutationFieldValue[];
 
 	// NOTE(robin): these fields are all deprecated
-	title: string;
-	description: string;
+	title?: string;
+	description?: string;
 	assignee_ref_rd?: string;
 	priority?: NameRefID;
 	type?: NameRefID;
 	epic?: NameRefID;
 	parent_ref_id?: string;
-	labels: string[];
+	labels?: string[];
 }
 
 export interface WorkIssueUpdateMutation {
