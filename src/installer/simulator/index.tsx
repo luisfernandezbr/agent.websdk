@@ -101,7 +101,7 @@ const ToastContainer = ({ toastParams }: { toastParams: ToastParams }) => {
 			});
 		}
 	}, [toastParams])
-	return <span />
+	return (<></>);
 }
 const SimulatorInstaller = ({
 	id = '1234567890',
