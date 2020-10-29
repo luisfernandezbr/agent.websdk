@@ -37,7 +37,7 @@ export interface NameRefID {
 
 // NOTE(robin): this is cc'd from datamodel.types's `PipelineWorkProjectCapabilityIssueMutationFieldsTypeEnum`
 // This is intensionally not exported because you should be able to just do PipelineWorkProjectCapabilityIssueMutationFieldsTypeEnum.STRING for type.
-type MutationFieldsType = 'STRING' | 'NUMBER' | 'WORK_ISSUE_TYPE' | 'WORK_ISSUE_PRIORITY' | 'STRING_ARRAY' | 'USER' | 'ATTACHMENT' | 'TEXTBOX' | 'EPIC' | 'WORK_SPRINT' | 'WORK_ISSUE';
+type MutationFieldsType = 'STRING' | 'NUMBER' | 'WORK_ISSUE_TYPE' | 'WORK_ISSUE_PRIORITY' | 'STRING_ARRAY' | 'USER' | 'ATTACHMENT' | 'TEXTBOX' | 'EPIC' | 'WORK_SPRINT' | 'WORK_ISSUE' | 'DATE';
 
 export interface MutationFieldValue {
 	ref_id: string;
