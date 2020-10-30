@@ -8,7 +8,7 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare": "npm install --no-save @pinpt/uic.next",
+    "prepare": "npm install --no-save @pinpt/uic.next --no-save @types/react-toast-notifications",
     "prepack": "npm run build",
     "build": "rollup -c",
     "watch": "rollup -cw"
@@ -25,6 +25,7 @@
     "typescript": "^3.9.5"
   },
   "peerDependencies": {
-    "@pinpt/uic.next": "1.0.115"
+    "@types/react-toast-notifications": "^2.4.0",
+    "@pinpt/uic.next": "^1.0.123"
   }
 }

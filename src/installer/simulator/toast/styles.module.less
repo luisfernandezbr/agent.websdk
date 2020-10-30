@@ -1,0 +1,77 @@
+@import '../../../../node_modules/@pinpt/uic.next/theme.less';
+
+:global(.react-toast-notifications__container) {
+	overflow: hidden !important;
+}
+
+.Toast {
+	pointer-events: initial;
+	transition-property: transform;
+	transition-timing-function: 'cubic-bezier(0.2, 0, 0, 1)';
+	transform-origin: right;
+	z-index: 20000;
+	align-items: 'left';
+	border-radius: 3px;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	min-width: 28.8rem;
+	max-width: 56.8rem;
+	padding: 1.5rem;
+	background: @Royal800;
+	color: @White;
+	overflow: hidden;
+	box-shadow: @BoxShadow;
+	margin: 0 1rem 1rem 0;
+	cursor: pointer;
+
+	h1 {
+		margin: 3px 0 4px;
+		line-height: 1.5rem;
+		color: @Royal300;
+	}
+
+	.Icon {
+		font-size: 1.5rem;
+		padding-right: 1rem;
+	}
+
+	&:focus {
+		color: @White;
+	}
+
+	&.success {
+		background-color: @Green600;
+
+		h1, .Icon {
+			color: @Green200;
+		}
+	}
+
+	&.error {
+		background-color: @Red500;
+
+		h1, .Icon {
+			color: @Red200;
+		}
+	}
+
+	&.warning {
+		background-color: @Yellow800;
+
+		h1, .Icon {
+			color: @Yellow300;
+		}
+	}
+
+	.Content {
+		flex: 1;
+		margin-right: 1rem;
+	}
+
+	.Dismiss {
+		margin-left: auto;
+		font-size: 1.5rem;
+		flex: 0 0 auto;
+	}
+}

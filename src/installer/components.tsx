@@ -30,13 +30,13 @@ export const Header = (props: HeaderProps) => {
 		<div className={styles.Header}>
 			<div className={styles.Row}>
 				{
-					typeof(props.icon) === 'string' ? (
+					typeof (props.icon) === 'string' ? (
 						<img src={props.icon} alt={props.name} className={styles.Icon} />
 					) : (
-						<span className={styles.Icon}>
-							{props.icon}
-						</span>
-					)
+							<span className={styles.Icon}>
+								{props.icon}
+							</span>
+						)
 				}
 
 				<div className={styles.Details}>
@@ -64,7 +64,7 @@ export const Header = (props: HeaderProps) => {
 						<span>
 							Published by
 						</span>
-				
+
 						<a target="_blank" href={props.publisher.url} rel="noopener noreferrer">
 							<img alt={props.publisher.name} src={props.publisher.avatar} />
 							{props.publisher.name}

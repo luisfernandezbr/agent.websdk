@@ -1,9 +1,11 @@
-import React from 'react';
-import Integration from './types';
-import { IProcessingDetail, ISelfManagedAgent, ISession, IUpgradeRequired } from '../types';
-import Installer from './index';
-import styles from './styles.less';
+import React, { useCallback, useEffect, useState } from 'react';
+import Integration from '../types';
+import { IProcessingDetail, ISelfManagedAgent, ISession, IUpgradeRequired, ToastOptions } from '../../types';
+import Installer from '../index';
+import styles from './../styles.less';
 import { Config } from 'index';
+import { default as Toast } from './toast/index'
+import { useToasts, ToastProvider, Options } from 'react-toast-notifications';
 
 type Maybe<T> = T | undefined | null;
 
@@ -52,7 +54,7 @@ const setSelfManagedAgentRequired = () => {
 const setPrivateKey = async () => {
 };
 
-const defaultGetPrivateKey =() => {
+const defaultGetPrivateKey = () => {
 	return Promise.resolve(null);
 };
 
@@ -76,6 +78,31 @@ const getEnv = () => {
 	}
 };
 
+
+interface ToastParams {
+	message: string;
+	options: ToastOptions;
+}
+
+const ToastContainer = ({ toastParams }: { toastParams: ToastParams }) => {
+	const { addToast } = useToasts();
+
+	useEffect(() => {
+		if (toastParams) {
+			const opts: ToastOptions = toastParams.options;
+			addToast(toastParams.message, {
+				appearance: opts.appearance,
+				autoDismiss: opts.autoDismiss,
+				onDismiss: (id: string) => {
+					if (opts.onDismiss) {
+						opts.onDismiss(id);
+					}
+				}
+			});
+		}
+	}, [toastParams])
+	return (<></>);
+}
 const SimulatorInstaller = ({
 	id = '1234567890',
 	integration,
@@ -109,6 +136,8 @@ const SimulatorInstaller = ({
 	getPrivateKey?: Maybe<() => Promise<string>>,
 }) => {
 	integration.installed = window.localStorage.getItem(`installer.${integration.refType}`) === 'true';
+
+	const [toastParams, setToastParams] = useState<ToastParams>()
 	var conf: Config = JSON.parse(window.localStorage.getItem(`installer.config.${integration.refType}`))?.oauth2_auth || {};
 	var auth = {};
 	if (conf.oauth2_auth) {
@@ -120,29 +149,44 @@ const SimulatorInstaller = ({
 	} else if (conf.apikey_auth) {
 		auth = conf.apikey_auth
 	}
+	// the ToastContainer is a workaround only for the simulator. The toast only works inside a ToastProvider,
+	// no need to change the webapp since it has it at the root of the hierarchy
+	const addToast = (message: string, options: ToastOptions) => {
+		setToastParams({ message, options })
+	}
 	return (
-		<Installer
-			id={id}
-			className={styles.Simulator}
-			integration={integration}
-			processingDetail={processingDetail}
-			upgradeRequired={upgradeRequired}
-			authorization={auth}
-			setInstallEnabled={setInstallEnabled}
-			getConfig={getConfig}
-			setConfig={setConfig}
-			onRemove={onRemove}
-			onInstall={onInstall}
-			onAuth1Connect={onAuth1Connect}
-			onValidate={onValidate ?? onValidateDefault}
-			setSelfManagedAgentRequired={setSelfManagedAgentRequired}
-			selfManagedAgent={selfManagedAgent}
-			session={session}
-			setPrivateKey={setPrivateKey}
-			getPrivateKey={getPrivateKey}
-			setInstallLocation={setInstallLocation}
-			setUpgradeComplete={setUpgradeComplete}
-		/>
+		<>
+			<ToastProvider
+				autoDismiss
+				placement="bottom-right"
+				components={{ Toast }}
+			>
+				<ToastContainer toastParams={toastParams}></ToastContainer>
+				<Installer
+					id={id}
+					className={styles.Simulator}
+					integration={integration}
+					processingDetail={processingDetail}
+					upgradeRequired={upgradeRequired}
+					authorization={auth}
+					setInstallEnabled={setInstallEnabled}
+					getConfig={getConfig}
+					setConfig={setConfig}
+					onRemove={onRemove}
+					onInstall={onInstall}
+					onAuth1Connect={onAuth1Connect}
+					onValidate={onValidate ?? onValidateDefault}
+					setSelfManagedAgentRequired={setSelfManagedAgentRequired}
+					selfManagedAgent={selfManagedAgent}
+					session={session}
+					setPrivateKey={setPrivateKey}
+					getPrivateKey={getPrivateKey}
+					setInstallLocation={setInstallLocation}
+					setUpgradeComplete={setUpgradeComplete}
+					addToast={addToast}
+				/>
+			</ToastProvider>
+		</>
 	);
 };
 

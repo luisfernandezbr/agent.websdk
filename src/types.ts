@@ -85,7 +85,7 @@ export interface ISession {
 	authUrl: string;
 }
 
-export type FetchHeaders = {[key: string]: string};
+export type FetchHeaders = { [key: string]: string };
 
 export interface IFetchResult {
 	statusCode: number;
@@ -107,6 +107,12 @@ export interface IUpgradeRequired {
 	message?: string;
 	due_date_ts?: number;
 	requested_date_ts?: number;
+}
+
+export interface ToastOptions {
+	appearance: 'error' | 'info' | 'success' | 'warning',
+	autoDismiss?: boolean;
+	onDismiss?: (id: string) => void;
 }
 
 export interface IAppContext {
@@ -172,4 +178,6 @@ export interface IAppContext {
 	setInstallLocation: (location: IInstalledLocation) => Promise<void>;
 	// setUpgradeComplete should be called to indicate that the integration instance has been upgraded
 	setUpgradeComplete: () => Promise<void>;
+	// addToast creates a toast notification in the ui
+	addToast: (message: string, options: ToastOptions) => void;
 }
