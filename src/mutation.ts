@@ -47,6 +47,7 @@ export interface MutationFieldValue {
 
 export interface WorkIssueCreateMutation {
 	project_ref_id: string;
+	project: NameRefID;
 	fields: MutationFieldValue[];
 
 	// NOTE(robin): these fields are all deprecated
