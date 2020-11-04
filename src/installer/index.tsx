@@ -12,7 +12,6 @@ export { default as Integration } from './types';
 import { IProcessingDetail, IAppAuthorization, OAuthVersion, ISelfManagedAgent, ISession, IInstalledLocation, IUpgradeRequired, ToastOptions } from '../types';
 import { Config } from '../config';
 import styles from './styles.less';
-import { Message } from '@pinpt/uic.next';
 
 const debug = typeof (document) === 'object' ? /(\.edge\.pinpoint\.com|\.ppoint\.io|\.pinpt\.vercel\.app)/.test(document.location.origin) : false;
 
