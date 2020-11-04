@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '@pinpt/uic.next';
+import Icon from '@pinpt/uic.next/Icon';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import styles from './styles.module.less';
 import { ToastProps } from 'react-toast-notifications';
