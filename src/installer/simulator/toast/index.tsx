@@ -1,8 +1,10 @@
 import React from 'react';
 import Icon from '@pinpt/uic.next/Icon';
-import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
-import styles from './styles.module.less';
 import { ToastProps } from 'react-toast-notifications';
+import {
+	faCheck, faExclamationCircle, faExclamationTriangle, faInfoCircle, IconDefinition, faTimes
+} from '@fortawesome/free-solid-svg-icons';
+import styles from './styles.module.less';
 
 const states = {
 	entering: { transform: 'translate3d(120%, 0, 0) scale(1)' },
@@ -18,23 +20,19 @@ const Toast = ({
 	transitionState,
 	onDismiss,
 }: ToastProps) => {
-	let prefix: IconPrefix = 'far';
-	let iconName: IconName;
+	let icon: IconDefinition;
 	switch (appearance) {
 		case 'success':
-			prefix = 'fas';
-			iconName = 'check';
+			icon = faCheck;
 			break;
 		case 'error':
-			prefix = 'fas';
-			iconName = 'exclamation-circle';
+			icon = faExclamationCircle;
 			break;
 		case 'warning':
-			prefix = 'fas';
-			iconName = 'exclamation-triangle';
+			icon = faExclamationTriangle;
 			break;
 		default:
-			iconName = 'info-circle';
+			icon = faInfoCircle;
 			break;
 	}
 	return (
@@ -52,14 +50,14 @@ const Toast = ({
 			tabIndex={-1}
 		>
 			<div className={styles.Icon}>
-				<Icon icon={[prefix, iconName]} />
+				<Icon icon={icon} />
 			</div>
 			<div className={styles.Content}>
 				{children}
 			</div>
 			<div className={styles.Dismiss}>
 				<Icon
-					icon={['far', 'times']}
+					icon={faTimes}
 				/>
 			</div>
 		</div>
